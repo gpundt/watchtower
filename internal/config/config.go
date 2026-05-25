@@ -57,3 +57,4 @@ type Alerts struct {
 		To		string  `yaml:"to"`
 	} `yaml:"email"`
 }
+
