@@ -1,0 +1,5 @@
+agent:
+  pust_interval_seconds: 30
+  server_url: "http://watchtower-server:8080"
+  token: "CHANGEME"
+  verbose: true
