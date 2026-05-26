@@ -3,7 +3,6 @@ server:
   port: 8080
   secret: "CHANGEME"
   verbose: true
-
 database:
   host: "localhost"
   port: 5432
@@ -11,7 +10,6 @@ database:
   user: "watchtower"
   password: "CHANGEME"
   ssl_mode: "disable"
-
 scanner:
   enabled: true
   interval_seconds: 300
@@ -24,7 +22,6 @@ scanner:
     - 443
     - 8080
     - 3000
-  
 alerts:
   discord:
     enabled: false
