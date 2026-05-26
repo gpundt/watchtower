@@ -8,7 +8,7 @@ SERVER_CERT="${CERTS_ROOT_DIR}/server/server.crt"
 SERVER_KEY="${CERTS_ROOT_DIR}/server/server.key"
 
 function apt_install_openssl() {
-    if sudo dpkg -l | grep openssl; then
+    if sudo dpkg -s openssl >/dev/null 2>&1; then
         return
     fi
     start_step_message "Installing OpenSSL APT Package"
@@ -38,7 +38,8 @@ function generate_ca() {
 
     if ! openssl req -x509 -sha256 -nodes -days 3650 -newkey rsa:4096 \
   -keyout "${CA_KEY}" -out "${CA_CERT}" \
-  -subj "/C=US/ST=HI/L=Honolulu/O=WatchtowerCA/OU=CertificateAuthority/CN=watchtower-ca.com"; then
+  -subj "/C=US/ST=HI/L=Honolulu/O=WatchtowerCA/OU=CertificateAuthority" \
+  -addext "basicConstraints=critical,CA:TRUE"; then
         error_message "Failed to generate CA Cert and CA Key"
     fi
     successful
@@ -63,9 +64,15 @@ function generate_server_cert() {
     fi
 
     if ! openssl req -new -key "${SERVER_KEY}" -out "${CERTS_ROOT_DIR}/server/server.csr" \
-     -subj "/C=US/ST=HI/L=Honolulu/O=Watchtower/OU=Server/CN=watchtower.com"; then
+     -subj "/C=US/ST=HI/L=Honolulu/O=Watchtower/OU=Server/"; then
         error_message "Failed to generate Server CSR"
     fi
+    cat > /tmp/server_ext.cnf << EOF
+subjectAltName = DNS:localhost, DNS:watchtower.home, IP:127.0.0.1, IP:0.0.0.0
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+EOF
+
     successful
 
     start_step_message "Generating CA Signed Server Certificate '${CERTS_ROOT_DIR}/server/'"
@@ -75,15 +82,18 @@ function generate_server_cert() {
 
     if ! openssl x509 -req -in "${CERTS_ROOT_DIR}/server/server.csr" \
      -CA "${CA_CERT}" -CAkey "${CA_KEY}" -CAcreateserial \
-     -out "${SERVER_CERT}" -days 365 -sha256; then
+     -out "${SERVER_CERT}" -days 365 -sha256 \
+     -extfile /tmp/server_ext.cnf; then
         error_message "Failed to generate CA Signed server cert: '${SERVER_CERT}'"
     fi
 
     rm -rf "${CERTS_ROOT_DIR}/server/server.csr"
+    rm -f /tmp/server_ext.cnf
     successful
 }
 
 function main() {
+    apt_install_openssl
     prepare_certs_directory
     generate_ca
     generate_server_key

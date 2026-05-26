@@ -1,6 +1,6 @@
 agent:
   push_interval_seconds: 30
-  server_url: "http://watchtower-server:8080"
+  server_url: "https://0.0.0.0:443"
   name: "test1"
   verbose: true
 
