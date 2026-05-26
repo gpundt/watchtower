@@ -54,9 +54,14 @@ type AgentConfigWrapper struct {
 	Agent struct {
 		PushIntervalSeconds int    `yaml:"push_interval_seconds"`
 		ServerURL           string `yaml:"server_url"`
-		Token               string `yaml:"token"`
+		Name				string `yaml:"name"`
 		Verbose             bool   `yaml:"verbose"`
 	} `yaml:"agent"`
+	TLS struct {
+		CACert	string	`yaml:"ca_cert"`
+		AgentCert	string	`yaml:"agent_cert"`
+		AgentKey	string	`yaml:"agent_key"`
+	} `yaml:"tls"`
 }
 
 type ConfigConstraint interface {

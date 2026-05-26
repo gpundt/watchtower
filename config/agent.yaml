@@ -1,5 +1,10 @@
 agent:
-  pust_interval_seconds: 30
+  push_interval_seconds: 30
   server_url: "http://watchtower-server:8080"
-  token: "CHANGEME"
+  name: "test1"
   verbose: true
+
+tls:
+  ca_cert: "/etc/watchtower/tls/ca.crt"
+  agent_cert: "/etc/watchtower/tls/agent.crt"
+  agent_key: "/etc/watchtower/tls/agent.key"
