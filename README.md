@@ -1,5 +1,18 @@
 # watchtower
-Network observation tower - Golang
+
+Network observation tower - Golang Server/Agent Deployment
+
+## Overview
+
+This server is deployed onto your homelab to conduct the following activities:
+
+- Network Host Discovery
+- Log and Metric Aggregation
+
+This server implements the following technologies / protocols:
+
+- Server / Agent mTLS Communication
+- Docker
 
 ## How to Deploy
 
