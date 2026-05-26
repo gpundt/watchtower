@@ -1,7 +1,10 @@
 package main
 
 import (
+	"time"
+
 	API "watchtower/internal/api"
+	Query "watchtower/internal/api/query"
 	Config "watchtower/internal/config"
 	Logger "watchtower/pkg/logger"
 )
@@ -15,6 +18,15 @@ func main() {
 	Logger.InitializeAgentLogger()
 
 	API.InitializeAgentAPI()
+
+	ticker := time.NewTicker(
+		time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * time.Second,
+	)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		Query.QueryHealthCheckEndpoint()
+	}
 
 	Logger.Close()
 }

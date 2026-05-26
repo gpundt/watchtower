@@ -9,7 +9,7 @@ import (
 
 func InitializeServerAPI() {
 	Query.InitializeQueryAPI()
-	
+
 	TLS.InitializeServermTLS()
 
 	log.Info().Msg("Server API: Initialized")
@@ -17,4 +17,5 @@ func InitializeServerAPI() {
 
 func InitializeAgentAPI() {
 	TLS.InitializeAgentmTLS()
+	Query.QueryHealthCheckEndpoint()
 }

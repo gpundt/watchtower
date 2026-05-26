@@ -1,17 +1,18 @@
 package tls
 
 import (
-	"fmt"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	Config "watchtower/internal/config"
-	Endpoints "watchtower/internal/api/endpoints"
 
 	"github.com/rs/zerolog/log"
 )
+
+var TLSServer *http.Server
 
 func InitializeServermTLS() {
 	// 1. Load server's cert and key
@@ -34,17 +35,19 @@ func InitializeServermTLS() {
 	// 3. Configure TLS
 	tlsConfig := &tls.Config{
 		Certificates: []tls.Certificate{cert},
-		ClientCAs: caCertPool,
-		ClientAuth: tls.RequireAndVerifyClientCert,
+		ClientCAs:    caCertPool,
+		ClientAuth:   tls.RequireAndVerifyClientCert,
 	}
 
-	server := &http.Server{
-		Addr: fmt.Sprintf(":%d", Config.ServerConfig.Server.Port),
+	TLSServer := &http.Server{
+		Addr:      fmt.Sprintf(":%d", Config.ServerConfig.Server.Port),
 		TLSConfig: tlsConfig,
 	}
 
-	server.ListenAndServeTLS("", "")
+	log.Fatal().Err(TLSServer.ListenAndServeTLS("", ""))
 }
+
+var AgentTLSClient *http.Client
 
 func InitializeAgentmTLS() {
 	// 1. Load the client's cert and key
@@ -65,21 +68,12 @@ func InitializeAgentmTLS() {
 	caCertPool.AppendCertsFromPEM(caCert)
 
 	// 3. Setup HTTPs transport
-	client := &http.Client{
+	AgentTLSClient = &http.Client{
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				RootCAs: caCertPool,
+				RootCAs:      caCertPool,
 				Certificates: []tls.Certificate{cert},
 			},
 		},
 	}
-
-	resp, err := client.Get(fmt.Sprintf("%s%s", Config.AgentConfig.Agent.ServerURL, Endpoints.HealthCheckEndpoint))
-	if err != nil {
-		log.Fatal().Err(err).Str("func", "InitializeAgentmTLS").Msg("Failed to contact api endpoint")
-	}
-	defer resp.Body.Close()
-
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Printf("Response: %s\n", body)
 }

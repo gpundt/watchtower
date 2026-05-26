@@ -22,6 +22,8 @@ define successful
 	@echo -e "\t - $(GREEN)*Successful*$(RESET)\n"
 endef
 
+all: prep_build_output_dirs build_server_binary							## Builds everything
+
 prep_build_output_dirs:
 	$(call start_step_message,"Prepping Build Output Dir")
 	@mkdir -p $(BUILD_OUTPUT_DIR)
