@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	// Initialize Configs, filepaths, and logging
 	Config.InitializeConfigWrapper(
 		&Config.AgentConfig,
 		Config.AgentPaths.ConfigFilepath,
@@ -18,13 +19,16 @@ func main() {
 	Config.PrepareFilepaths(Config.AgentPaths)
 	Logger.InitializeAgentLogger()
 
+	// Initialize API
 	API.InitializeAgentAPI()
 
+	// Create timer
 	ticker := time.NewTicker(
 		time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * time.Second,
 	)
 	defer ticker.Stop()
 
+	// Every Config.AgentConfig.Agent.PushIntervalSeconds
 	for range ticker.C {
 		Query.QueryHealthCheckEndpoint()
 		Submission.SubmitHostMetricsMaster()

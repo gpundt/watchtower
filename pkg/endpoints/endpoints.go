@@ -4,7 +4,7 @@ const (
 	// Roots
 	rootEndpoint       = "/api/v1"
 	queryEndpoint      = rootEndpoint + "/query"
-	submissionEndpoint = rootEndpoint + "/submit"
+	SubmissionEndpoint = rootEndpoint + "/submit"
 
 	// Queries
 	QueryHealthCheck   = queryEndpoint + "/health_check"
@@ -14,8 +14,8 @@ const (
 	QueryServerTemp    = queryEndpoint + "/server_temp"
 
 	// Submissions
-	SubmitHostCPU     = submissionEndpoint + "/host_cpu"
-	SubmitHostMemory  = submissionEndpoint + "/host_memory"
-	SubmitHostStorage = submissionEndpoint + "/host_storage"
-	SubmitHostTemp    = submissionEndpoint + "/host_temp"
+	SubmitHostCPU     = SubmissionEndpoint + "/host_cpu"
+	SubmitHostMemory  = SubmissionEndpoint + "/host_memory"
+	SubmitHostStorage = SubmissionEndpoint + "/host_storage"
+	SubmitHostTemp    = SubmissionEndpoint + "/host_temp"
 )

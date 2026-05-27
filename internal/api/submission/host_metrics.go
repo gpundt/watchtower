@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	Endpoints "watchtower/internal/api/endpoints"
+	Endpoints "watchtower/pkg/endpoints"
 	Query "watchtower/internal/api/query"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
@@ -42,6 +42,7 @@ func submitHostMetrics[T MetricsStructConstraint](endpoint string, metricsStruct
 		return
 	}
 	defer resp.Body.Close()
+	log.Debug().Str("endpoint", endpoint).Msg("Metrics: Submitted")
 }
 
 // Struct to be populated with incoming host CPU metrics submission

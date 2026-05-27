@@ -5,14 +5,14 @@ import (
 	// "io"
 	"net/http"
 
-	Endpoints "watchtower/internal/api/endpoints"
+	Endpoints "watchtower/pkg/endpoints"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
 
 	"github.com/rs/zerolog/log"
 )
 
-func initializeHealthCheckAPI() {
+func initializeHealthCheckAPIEndpoint() {
 	http.HandleFunc(Endpoints.QueryHealthCheck, makeGetHandler(generateHealthCheckResponse))
 	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg("Health Check Endpoint: Initialized")
 }

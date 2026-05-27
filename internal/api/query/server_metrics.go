@@ -7,7 +7,7 @@ import (
 	"syscall"
 	"time"
 
-	Endpoints "watchtower/internal/api/endpoints"
+	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -137,7 +137,7 @@ func GenerateHostTempJSON() map[string][]TempData {
 
 	temps, err := host.SensorsTemperatures()
 	if err != nil || len(temps) == 0 {
-		log.Error().Str("server_temp", "Unavailable").Msg("Failed to get host.SensorsTemperatures()")
+		//log.Error().Str("server_temp", "Unavailable").Msg("Failed to get host.SensorsTemperatures()")
 		newTempData := TempData{
 			Sensor:  "Temperature Not Available",
 			Celsius: nil,

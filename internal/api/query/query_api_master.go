@@ -8,8 +8,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Global function to start listening on API endpoint
 func InitializeQueryAPI() {
-	initializeHealthCheckAPI()
+	initializeHealthCheckAPIEndpoint()
 	initializeServerMetricsAPIEndpoints()
 }
 

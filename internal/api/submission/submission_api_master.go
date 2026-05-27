@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	Endpoints "watchtower/internal/api/endpoints"
+	Endpoints "watchtower/pkg/endpoints"
 	Query "watchtower/internal/api/query"
 
 	"github.com/rs/zerolog/log"
@@ -17,6 +17,7 @@ func SubmitHostMetricsMaster() {
 	submitHostMetrics(Endpoints.SubmitHostMemory, Query.GenerateHostMemoryJSON())
 	submitHostMetrics(Endpoints.SubmitHostStorage, Query.GenerateHostStorageJSON())
 	submitHostMetrics(Endpoints.SubmitHostTemp, Query.GenerateHostTempJSON())
+	log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).Msg("Host Metrics: Submitted")
 }
 
 // Initializes Server-side endpoints to receive host metrics
