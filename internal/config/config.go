@@ -27,9 +27,8 @@ type ServerConfigWrapper struct {
 	} `yaml:"database"`
 	Scanner struct {
 		Enabled                 bool     `yaml:"enabled"`
-		IntervalSeconds         int      `yaml:"interval_seconds"`
-		PortScanIntervalSeconds int      `yaml:"port_scan_interval_seconds"`
-		Targets                 []string `yaml:"targets"`
+		IntervalMinutes         int      `yaml:"interval_minutes"`
+		MaxConcurrentScans		int		 `yaml:"max_concurrent_scans"`
 		Ports                   []int    `yaml:"ports"`
 	} `yaml:"scanner"`
 	Alerts struct {
