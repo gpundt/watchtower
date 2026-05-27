@@ -2,7 +2,7 @@ package query
 
 import (
 	"fmt"
-	"io"
+	// "io"
 	"net/http"
 
 	Endpoints "watchtower/internal/api/endpoints"
@@ -45,10 +45,10 @@ func QueryHealthCheckEndpoint() {
 		log.Err(err)
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Err(err)
-	}
-
-	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg(string(body))
+	// body, err := io.ReadAll(resp.Body)
+	// if err != nil {
+	// 	log.Err(err)
+	// }
+	
+	// log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg(string(body))
 }

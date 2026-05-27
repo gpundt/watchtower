@@ -18,6 +18,7 @@ type MetricsStructConstraint interface {
 	map[string]any | map[string][]Query.TempData
 }
 
+// Agent-side function to submit gathered host metrics
 func submitHostMetrics[T MetricsStructConstraint](endpoint string, metricsStruct T) {
 	jsonData, err := json.MarshalIndent(metricsStruct, "", "  ")
 	if err != nil {
@@ -43,6 +44,7 @@ func submitHostMetrics[T MetricsStructConstraint](endpoint string, metricsStruct
 	defer resp.Body.Close()
 }
 
+// Struct to be populated with incoming host CPU metrics submission
 type HostCPUBody struct {
 	Model          string  `json:"cpu_model"`
 	Family         string  `json:"cpu_family"`
@@ -54,20 +56,17 @@ type HostCPUBody struct {
 	UsedPercentage float64 `json:"cpu_used_percentage"`
 }
 
+// Initializes server-side endpoint to receive CPU metrics
 func initializeHostCPUSubmissionEndpoint() {
+	var outputStruct HostCPUBody
 	http.HandleFunc(
-		fmt.Sprintf("POST %s", Endpoints.SubmitHostCPU), func(w http.ResponseWriter, r *http.Request) {
-			var b HostCPUBody
-
-			if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			log.Debug().Str("url", r.URL.Path).Str("request_addr", r.RemoteAddr).Str("method", r.Method).Msg("")
-		})
+		fmt.Sprintf("POST %s", Endpoints.SubmitHostCPU),
+		makePostHandler(outputStruct),
+	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostCPU).Msg("Host CPU Submission Endpoint: Initialized")
 }
 
+// Struct to be populated with Incoming host memory metrics submission
 type HostMemoryBody struct {
 	TotalMemoryBytes     float64 `json:"total_memory_bytes"`
 	FreeMemoryBytes      float64 `json:"free_memory_bytes"`
@@ -76,21 +75,17 @@ type HostMemoryBody struct {
 	UsedMemoryPercentage float64 `json:"used_memory_percentage"`
 }
 
+// Initializes server-side endpoint to receive memory metrics
 func initializeHostMemorySubmissionEndpoint() {
+	var outputStruct HostMemoryBody
 	http.HandleFunc(
-		fmt.Sprintf("POST %s", Endpoints.SubmitHostMemory), func(w http.ResponseWriter, r *http.Request) {
-			var b HostMemoryBody
-
-			if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			log.Debug().Str("url", r.URL.Path).Str("request_addr", r.RemoteAddr).Str("method", r.Method).Msg("")
-		})
+		fmt.Sprintf("POST %s", Endpoints.SubmitHostMemory),
+		makePostHandler(outputStruct),
+	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostMemory).Msg("Host Memory Submission Endpoint: Initialized")
-
 }
 
+// Struct to be populated with Incoming host storage metrics submission
 type HostStorageBody struct {
 	TotalStoageBytes      uint64 `json:"total_storage_bytes"`
 	FreeStorageBytes      uint64 `json:"free_storage_bytes"`
@@ -99,36 +94,29 @@ type HostStorageBody struct {
 	UsedStoragePercentage string `json:"used_storage_percentage"`
 }
 
+// Initializes server-side endpoint to receive storage metrics
 func initializeHostStorageSubmissionEndpoint() {
+	var outputStruct HostStorageBody
 	http.HandleFunc(
-		fmt.Sprintf("POST %s", Endpoints.SubmitHostStorage), func(w http.ResponseWriter, r *http.Request) {
-			var b HostStorageBody
-
-			if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			log.Debug().Str("url", r.URL.Path).Str("request_addr", r.RemoteAddr).Str("method", r.Method).Msg("")
-		})
+		fmt.Sprintf("POST %s", Endpoints.SubmitHostStorage),
+		makePostHandler(outputStruct),
+	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostStorage).Msg("Host Storage Submission Endpoint: Initialized")
 
 }
 
+// Struct to be populated with Incoming host Temperature metrics submission
 type HostTempBody struct {
 	Data []Query.TempData `json:"data"`
 }
 
+// Initializes server-side endpoint to receive temperature metrics
 func initializeHostTempSubmissionEndpoint() {
+	var outputStruct HostTempBody
 	http.HandleFunc(
-		fmt.Sprintf("POST %s", Endpoints.SubmitHostTemp), func(w http.ResponseWriter, r *http.Request) {
-			var b HostTempBody
-
-			if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			log.Debug().Str("url", r.URL.Path).Str("request_addr", r.RemoteAddr).Str("method", r.Method).Msg("")
-		})
+		fmt.Sprintf("POST %s", Endpoints.SubmitHostTemp),
+		makePostHandler(outputStruct),
+	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostTemp).Msg("Host Temp Submission Endpoint: Initialized")
-
 }
+
