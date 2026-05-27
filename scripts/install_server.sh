@@ -46,9 +46,11 @@ function prep_important_dirs() {
 }
 
 function _create_dir() {
-    start_step_message "$1" "substep"
-    if ! sudo mkdir -p "$1"; then
-        error_message "Failed to create directory '$1'"
+    if [ ! -d "$1" ]; then
+        start_step_message "$1" "substep"
+        if ! sudo mkdir -p "$1"; then
+            error_message "Failed to create directory '$1'"
+        fi
     fi
 }
 

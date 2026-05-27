@@ -16,10 +16,46 @@ This server implements the following technologies / protocols:
 
 ## How to Deploy
 
-### Locally
+### Server
 
+#### Systemd
 1) Generate server-side certificates: `cd scripts && ./generate_server_certs.sh`
-2) Generate agent-side certificates: `cd scripts && ./generate_agent_certs.sh`
-3) Build the binaries: `make build_server_binary`
-4) Run the server binary: `cd build && ./watchtower_server`
-5) Run the agent binary: `cd build && ./watchtower_agent`
+2) Run the local server install script: `cd scripts && ./install_server.sh`
+
+#### Docker
+
+- IN PROGRESS
+
+### Agent
+
+#### Systemd
+1) Generate agent-side certificates: `cd scripts && ./generate_agent_certs.sh`
+2) Run the local agent install script: `cd scripts && ./install_agent.sh`
+
+
+#### Docker
+
+- IN PROGRESS
+
+
+## How to Uninstall
+
+### Server
+
+#### Systemd
+
+1) Run the local server uninstall script: `cd scripts && ./uninstall_server.sh`
+
+#### Docker
+
+- IN PROGRESS
+
+### Agent
+
+#### Systemd
+
+1) Run the local agent uninstall script: `cd scripts && ./uninstall_agent.sh`
+
+#### Docker
+
+- IN PROGRESS

@@ -28,7 +28,6 @@ function remove_important_directories() {
     _remove_dir $OPT_DIRECTORY
     _remove_dir $BINARY_DIRECTORY
     _remove_dir $TLS_DIRECTORY
-    _remove_dir $LOG_DIRECTORY
     successful
 }
 
