@@ -11,12 +11,11 @@ import (
 )
 
 func main() {
-	// Initialize Configs, filepaths, and logging
+	// Initialize Configs and logging
 	Config.InitializeConfigWrapper(
 		&Config.AgentConfig,
 		Config.AgentPaths.ConfigFilepath,
 	)
-	Config.PrepareFilepaths(Config.AgentPaths)
 	Logger.InitializeAgentLogger()
 
 	// Initialize API

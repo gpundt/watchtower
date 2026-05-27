@@ -1,9 +1,9 @@
 [Unit]
-Description=Watchtower Agent | Metric Submission
+Description=Watchtower Server | Network Monitoring | Metric Aggregation
 After=network.target
 
 [Service]
-ExecStart=/opt/watchtower/bin/watchtower_agent
+ExecStart=/opt/watchtower/bin/watchtower_server
 WorkingDirectory=/opt/watchtower/bin
 User=root
 Restart=Always

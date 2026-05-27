@@ -9,12 +9,11 @@ import (
 )
 
 func main() {
-	// Initialize Configs, filepaths, and loggng
+	// Initialize Configs and loggng
 	Config.InitializeConfigWrapper(
 		&Config.ServerConfig,
 		Config.ServerPaths.ConfigFilepath,
 	)
-	Config.PrepareFilepaths(Config.ServerPaths)
 	Logger.InitializeServerLogger()
 
 	// Create background process to handle API endpoints

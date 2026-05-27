@@ -1,49 +1,43 @@
 package config
 
-import (
-	"log"
-	"os"
-)
-
 type Filepaths struct {
+	EtcDirectory	string
 	ConfigFilepath  string
+	OptDirectory	string
+	BinaryDirectory string
+	BinaryFilepath	string
 	LogDirectory    string
 	LogFilepath     string
+	TLSDirectory	string
 	CACertFilepath  string
 	CertFilepath	string
 	KeyFilepath		string
 }
 
 var AgentPaths = Filepaths{
-	ConfigFilepath: "../config/agent.yaml",
-	LogDirectory:   "../logs/",
-	LogFilepath:    "",
-	CACertFilepath: "../certs/ca/ca.crt",
-	CertFilepath:   "../certs/agents/test_agent.crt",
-	KeyFilepath:    "../certs/agents/test_agent.key",
+	EtcDirectory: 	 "/etc/watchtower/",
+	ConfigFilepath:  "/etc/watchtower/agent.yaml",
+	OptDirectory:	 "/opt/watchtower/",
+	BinaryDirectory: "/opt/watchtower/bin/",
+	BinaryFilepath:  "/opt/watchtower/bin/watchtower_agent",
+	LogDirectory:    "/var/log/watchtower/",
+	LogFilepath:     "",
+	TLSDirectory:    "/opt/watchtower/tls/",
+	CACertFilepath:  "/opt/watchtower/tls/ca.crt",
+	CertFilepath:    "/opt/watchtower/tls/test_agent.crt",
+	KeyFilepath:     "/opt/watchtower/tls/test_agent.key",
 }
 
 var ServerPaths = Filepaths{
-	ConfigFilepath: "../config/server.yaml",
-	LogDirectory:   "../logs",
-	LogFilepath:    "",
-	CACertFilepath: "../certs/ca/ca.crt",
-	CertFilepath: 	"../certs/server/server.crt",
-	KeyFilepath:	"../certs/server/server.key",
-}
-
-func PrepareFilepaths(filepathsStruct Filepaths) {
-	dirs := []string{
-		filepathsStruct.LogDirectory,
-	}
-
-	for _, dir := range dirs {
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			log.Fatalf(
-				"Filepath prep failed '%s': %v",
-				dir,
-				err,
-			)
-		}
-	}
+	EtcDirectory: 	 "/etc/watchtower/",
+	ConfigFilepath:  "/etc/watchtower/server.yaml",
+	OptDirectory:	 "/opt/watchtower/",
+	BinaryDirectory: "/opt/watchtower/bin/",
+	BinaryFilepath:  "/opt/watchtower/bin/watchtower_server",
+	LogDirectory:    "/var/log/watchtower/",
+	LogFilepath:     "",
+	TLSDirectory:    "/opt/watchtower/tls/",
+	CACertFilepath:  "/opt/watchtower/tls/ca.crt",
+	CertFilepath:    "/opt/watchtower/tls/server.crt",
+	KeyFilepath:     "/opt/watchtower/tls/server.key",
 }
