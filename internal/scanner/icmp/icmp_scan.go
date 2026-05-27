@@ -25,7 +25,10 @@ func RunICMPScan(subnets []string) {
 		ActiveHosts: []string{},
 		InactiveHosts: []string{},
 	}
-	guard := make(chan struct{}, Config.ServerConfig.Scanner.MaxConcurrentScans)
+	guard := make(
+		chan struct{},
+		Config.ServerConfig.Scanner.MaxConcurrentScans,
+	)
 
 	var wg sync.WaitGroup
 	
@@ -51,7 +54,11 @@ func RunICMPScan(subnets []string) {
 				pinger, err := probing.NewPinger(hostIP)
 				if err != nil {
 					log.Err(err).Str("hostIP", hostIP).Msg("")
-					scanResults.InactiveHosts = append(scanResults.InactiveHosts, hostIP)
+					scanResults.InactiveHosts = append(
+						scanResults.InactiveHosts,
+						hostIP,
+					)
+
 					return
 				}	
 
@@ -64,10 +71,16 @@ func RunICMPScan(subnets []string) {
 
 				if err != nil || stats.PacketsRecv == 0 {
 					log.Debug().Str("hostIP", hostIP).Msg("Probe Missed")
-					scanResults.InactiveHosts = append(scanResults.InactiveHosts, hostIP)
+					scanResults.InactiveHosts = append(
+						scanResults.InactiveHosts,
+						hostIP,
+					)
 				} else {
 					log.Debug().Str("hostIP", hostIP).Msg("Probe Hit!")
-					scanResults.ActiveHosts = append(scanResults.ActiveHosts, hostIP)
+					scanResults.ActiveHosts = append(
+						scanResults.ActiveHosts,
+						hostIP,
+					)
 				}
 			}(hostIP)
 		}

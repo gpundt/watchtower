@@ -43,7 +43,12 @@ func getHostIPSubnets() ([]string, error) {
 				cidr := ipNet.String()
 				prefix, err := netip.ParsePrefix(cidr)
 				if err != nil {
-					log.Err(err).Str("func", "getHostIPSubnets").Msg(fmt.Sprintf("Failed to parse prefix from '%s'", cidr))
+					log.Err(err).
+						Str("func", "getHostIPSubnets").
+						Msg(fmt.Sprintf(
+							"Failed to parse prefix from '%s'",
+							cidr,
+						))
 					continue
 				}
 				networkAddr := string(prefix.Masked().String())
@@ -58,7 +63,9 @@ func getHostIPSubnets() ([]string, error) {
 		return nil, errors.New("No subnets found")
 
 	} else {
-		log.Debug().Str("func", "getHostIPSubnets").Msg(fmt.Sprintf("%s", subnets))
+		log.Debug().
+			Str("func", "getHostIPSubnets").
+			Msg(fmt.Sprintf("%s", subnets))
 	}
 	
 	return subnets, nil

@@ -25,8 +25,12 @@ func initializeServerMetricsAPIEndpoints() {
 
 // Function to initialize server_cpu API endpoint
 func initializeServerCPUEndpoint() {
-	http.HandleFunc(Endpoints.QueryServerCPU, makeGetHandler(GenerateHostCPUJSON))
-	log.Debug().Str("server_cpu", Endpoints.QueryServerCPU).Msg("Server CPU Endpoint Initialized")
+	http.HandleFunc(
+		Endpoints.QueryServerCPU,
+		makeGetHandler(GenerateHostCPUJSON),
+	)
+	log.Debug().Str("server_cpu", Endpoints.QueryServerCPU).
+		Msg("Server CPU Endpoint Initialized")
 }
 
 // Helper function to get server CPU information and format into HTTP response
@@ -51,8 +55,12 @@ func GenerateHostCPUJSON() map[string]any {
 
 // Function to initialize server_memory API endpoint
 func initializeServerMemoryEndpoint() {
-	http.HandleFunc(Endpoints.QueryServerMemory, makeGetHandler(GenerateHostMemoryJSON))
-	log.Debug().Str("server_memory", Endpoints.QueryServerMemory).Msg("Server Memory Endpoint Initialized")
+	http.HandleFunc(
+		Endpoints.QueryServerMemory,
+		makeGetHandler(GenerateHostMemoryJSON),
+	)
+	log.Debug().Str("server_memory", Endpoints.QueryServerMemory).
+		Msg("Server Memory Endpoint Initialized")
 }
 
 // Helper function to get server Memory information and format into HTTP response
@@ -70,8 +78,12 @@ func GenerateHostMemoryJSON() map[string]any {
 
 // Function to initialize server_storage API endpoint
 func initializeServerStorageEndpoint() {
-	http.HandleFunc(Endpoints.QueryServerStorage, makeGetHandler(GenerateHostStorageJSON))
-	log.Debug().Str("server_storage", Endpoints.QueryServerStorage).Msg("Server Storage Endpoint Initialized")
+	http.HandleFunc(
+		Endpoints.QueryServerStorage,
+		makeGetHandler(GenerateHostStorageJSON),
+	)
+	log.Debug().Str("server_storage", Endpoints.QueryServerStorage).
+		Msg("Server Storage Endpoint Initialized")
 }
 
 // Helper function to get server storage information and format into HTTP response
@@ -120,7 +132,8 @@ func initializeServerTempEndpoint() {
 		fmt.Fprintf(w, string(b))
 	})
 
-	log.Debug().Str("server_temp", Endpoints.QueryServerTemp).Msg("Server Temp Endpoint Initialized")
+	log.Debug().Str("server_temp", Endpoints.QueryServerTemp).
+		Msg("Server Temp Endpoint Initialized")
 }
 
 type TempData struct {

@@ -21,13 +21,17 @@ func InitializeServermTLS() {
 		Config.ServerPaths.KeyFilepath,
 	)
 	if loadErr != nil {
-		log.Fatal().Err(loadErr).Str("func", "InitializeServermTLS").Msg("failed to load x509 keypair")
+		log.Fatal().Err(loadErr).
+			Str("func", "InitializeServermTLS").
+			Msg("failed to load x509 keypair")
 	}
 
 	// 2. Load the CA cert that signed these certificates
 	caCert, readErr := ioutil.ReadFile(Config.ServerPaths.CACertFilepath)
 	if readErr != nil {
-		log.Fatal().Err(readErr).Str("func", "InitializeServermTLS").Msg("failed to read CA cert")
+		log.Fatal().Err(readErr).
+			Str("func", "InitializeServermTLS").
+			Msg("failed to read CA cert")
 	}
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
@@ -56,13 +60,17 @@ func InitializeAgentmTLS() {
 		Config.AgentPaths.KeyFilepath,
 	)
 	if loadErr != nil {
-		log.Fatal().Err(loadErr).Str("func", "InitializeAgentmTLS").Msg("failed to load x509 keypair")
+		log.Fatal().Err(loadErr).
+			Str("func", "InitializeAgentmTLS").
+			Msg("failed to load x509 keypair")
 	}
 
 	// 2. Load the CA cet that signed the server's certificate
 	caCert, readErr := ioutil.ReadFile(Config.AgentPaths.CACertFilepath)
 	if readErr != nil {
-		log.Fatal().Err(readErr).Str("func", "InitializeAgentmTLS").Msg("failed to read CA cert")
+		log.Fatal().Err(readErr).
+			Str("func", "InitializeAgentmTLS").
+			Msg("failed to read CA cert")
 	}
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)

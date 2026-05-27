@@ -13,11 +13,24 @@ import (
 
 // Submits gathered host metrics to server-side endpoints
 func SubmitHostMetricsMaster() {
-	submitHostMetrics(Endpoints.SubmitHostCPU, Query.GenerateHostCPUJSON())
-	submitHostMetrics(Endpoints.SubmitHostMemory, Query.GenerateHostMemoryJSON())
-	submitHostMetrics(Endpoints.SubmitHostStorage, Query.GenerateHostStorageJSON())
-	submitHostMetrics(Endpoints.SubmitHostTemp, Query.GenerateHostTempJSON())
-	log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).Msg("Host Metrics: Submitted")
+	submitHostMetrics(
+		Endpoints.SubmitHostCPU,
+		Query.GenerateHostCPUJSON(),
+	)
+	submitHostMetrics(
+		Endpoints.SubmitHostMemory,
+		Query.GenerateHostMemoryJSON(),
+	)
+	submitHostMetrics(
+		Endpoints.SubmitHostStorage,
+		Query.GenerateHostStorageJSON(),
+	)
+	submitHostMetrics(
+		Endpoints.SubmitHostTemp,
+		Query.GenerateHostTempJSON(),
+	)
+	log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).
+		Msg("Host Metrics: Submitted")
 }
 
 // Initializes Server-side endpoints to receive host metrics
@@ -34,7 +47,9 @@ type OutputStructConstraint interface {
 }
 
 // Master function to create a POST endpoint that populates an outputStruct
-func makePostHandler[T OutputStructConstraint](outputStruct T) http.HandlerFunc {
+func makePostHandler[T OutputStructConstraint](
+		outputStruct T,
+	) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -46,6 +61,9 @@ func makePostHandler[T OutputStructConstraint](outputStruct T) http.HandlerFunc 
 			return
 		}
 
-		log.Debug().Str("url", r.URL.Path).Str("request_addr", r.RemoteAddr).Str("method", r.Method).Msg(fmt.Sprintf("%+v", outputStruct))
+		log.Debug().Str("url", r.URL.Path).
+			Str("request_addr", r.RemoteAddr).
+			Str("method", r.Method).
+			Msg(fmt.Sprintf("%+v", outputStruct))
 	}
 }

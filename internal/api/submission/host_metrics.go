@@ -19,7 +19,11 @@ type MetricsStructConstraint interface {
 }
 
 // Agent-side function to submit gathered host metrics
-func submitHostMetrics[T MetricsStructConstraint](endpoint string, metricsStruct T) {
+func submitHostMetrics[T MetricsStructConstraint](
+	endpoint string,
+	metricsStruct T,
+) {
+	// Construct JSON body
 	jsonData, err := json.MarshalIndent(metricsStruct, "", "  ")
 	if err != nil {
 		log.Err(err).Msg(fmt.Sprintf(
@@ -29,8 +33,13 @@ func submitHostMetrics[T MetricsStructConstraint](endpoint string, metricsStruct
 		return
 	}
 
+	// Make post request
 	resp, err := TLS.AgentTLSClient.Post(
-		fmt.Sprintf("%s%s", Config.AgentConfig.Agent.ServerURL, endpoint),
+		fmt.Sprintf(
+			"%s%s",
+			Config.AgentConfig.Agent.ServerURL,
+			endpoint,
+		),
 		"application/json",
 		bytes.NewBuffer(jsonData),
 	)
@@ -42,7 +51,8 @@ func submitHostMetrics[T MetricsStructConstraint](endpoint string, metricsStruct
 		return
 	}
 	defer resp.Body.Close()
-	log.Debug().Str("endpoint", endpoint).Msg("Metrics: Submitted")
+	log.Debug().Str("endpoint", endpoint).
+		Msg("Metrics: Submitted")
 }
 
 // Struct to be populated with incoming host CPU metrics submission
@@ -64,7 +74,8 @@ func initializeHostCPUSubmissionEndpoint() {
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostCPU),
 		makePostHandler(outputStruct),
 	)
-	log.Debug().Str("host_cpu", Endpoints.SubmitHostCPU).Msg("Host CPU Submission Endpoint: Initialized")
+	log.Debug().Str("host_cpu", Endpoints.SubmitHostCPU).
+		Msg("Host CPU Submission Endpoint: Initialized")
 }
 
 // Struct to be populated with Incoming host memory metrics submission
@@ -83,7 +94,8 @@ func initializeHostMemorySubmissionEndpoint() {
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostMemory),
 		makePostHandler(outputStruct),
 	)
-	log.Debug().Str("host_cpu", Endpoints.SubmitHostMemory).Msg("Host Memory Submission Endpoint: Initialized")
+	log.Debug().Str("host_cpu", Endpoints.SubmitHostMemory).
+		Msg("Host Memory Submission Endpoint: Initialized")
 }
 
 // Struct to be populated with Incoming host storage metrics submission
@@ -102,7 +114,8 @@ func initializeHostStorageSubmissionEndpoint() {
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostStorage),
 		makePostHandler(outputStruct),
 	)
-	log.Debug().Str("host_cpu", Endpoints.SubmitHostStorage).Msg("Host Storage Submission Endpoint: Initialized")
+	log.Debug().Str("host_cpu", Endpoints.SubmitHostStorage).
+		Msg("Host Storage Submission Endpoint: Initialized")
 
 }
 
@@ -118,6 +131,7 @@ func initializeHostTempSubmissionEndpoint() {
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostTemp),
 		makePostHandler(outputStruct),
 	)
-	log.Debug().Str("host_cpu", Endpoints.SubmitHostTemp).Msg("Host Temp Submission Endpoint: Initialized")
+	log.Debug().Str("host_cpu", Endpoints.SubmitHostTemp).
+		Msg("Host Temp Submission Endpoint: Initialized")
 }
 

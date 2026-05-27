@@ -67,7 +67,10 @@ type ConfigConstraint interface {
 	AgentConfigWrapper | ServerConfigWrapper
 }
 
-func InitializeConfigWrapper[T ConfigConstraint](configWrapper *T, filepath string) {
+func InitializeConfigWrapper[T ConfigConstraint](
+	configWrapper *T,
+	filepath string,
+) {
 	yamlData, err := os.ReadFile(filepath)
 	if err != nil {
 		log.Fatalf("Error: %v", err)

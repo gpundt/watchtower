@@ -13,8 +13,12 @@ import (
 )
 
 func initializeHealthCheckAPIEndpoint() {
-	http.HandleFunc(Endpoints.QueryHealthCheck, makeGetHandler(generateHealthCheckResponse))
-	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg("Health Check Endpoint: Initialized")
+	http.HandleFunc(
+		Endpoints.QueryHealthCheck,
+		makeGetHandler(generateHealthCheckResponse),
+	)
+	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).
+	Msg("Health Check Endpoint: Initialized")
 }
 
 // Generates JSON response for incoming health_check queries
@@ -34,14 +38,20 @@ func QueryHealthCheckEndpoint() {
 		Endpoints.QueryHealthCheck,
 	))
 	if err != nil {
-		log.Err(err).Msg(fmt.Sprintf("%s unavailable", Endpoints.QueryHealthCheck))
+		log.Err(err).Msg(fmt.Sprintf(
+			"%s unavailable",
+			Endpoints.QueryHealthCheck,
+		))
 		return
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		err := fmt.Errorf("Request failed with status: %d", resp.StatusCode)
+		err := fmt.Errorf(
+			"Request failed with status: %d",
+			resp.StatusCode,
+		)
 		log.Err(err)
 	}
 
@@ -49,6 +59,6 @@ func QueryHealthCheckEndpoint() {
 	// if err != nil {
 	// 	log.Err(err)
 	// }
-	
-	// log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg(string(body))
+	// log.Debug().Str("health_check", Endpoints.QueryHealthCheck).
+	//     Msg(string(body))
 }
