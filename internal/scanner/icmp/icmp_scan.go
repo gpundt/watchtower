@@ -51,9 +51,10 @@ func RunICMPScan(subnets []string) {
 				defer wg.Done()
 				defer func() { <-guard }() // Release the slot in the semphore
 			
-				pinger, err := probing.NewPinger(hostIP)
+				// Create object to ping hosts
+				pinger, err := probing.NewPinger(ip)
 				if err != nil {
-					log.Err(err).Str("hostIP", hostIP).Msg("")
+					log.Err(err).Str("ip", ip).Msg("")
 					scanResults.InactiveHosts = append(
 						scanResults.InactiveHosts,
 						hostIP,
@@ -69,14 +70,15 @@ func RunICMPScan(subnets []string) {
 				err = pinger.Run()
 				stats := pinger.Statistics()
 
+				// If error or no response, we missed
 				if err != nil || stats.PacketsRecv == 0 {
-					log.Debug().Str("hostIP", hostIP).Msg("Probe Missed")
+					log.Debug().Str("ip", ip).Msg("Probe Missed")
 					scanResults.InactiveHosts = append(
 						scanResults.InactiveHosts,
 						hostIP,
 					)
 				} else {
-					log.Debug().Str("hostIP", hostIP).Msg("Probe Hit!")
+					log.Debug().Str("ip", ip).Msg("Probe Hit!")
 					scanResults.ActiveHosts = append(
 						scanResults.ActiveHosts,
 						hostIP,

@@ -4,9 +4,11 @@ import(
 	"errors"
 	"fmt"
 	"net"
-	"net/netip"
+	"slices"
 
+	ARP "watchtower/internal/scanner/arp"
 	ICMP "watchtower/internal/scanner/icmp"
+	Port "watchtower/internal/scanner/port"
 
 	"github.com/rs/zerolog/log"
 )
@@ -24,6 +26,8 @@ func InitializeNetworkScanner() {
 
 func StartScanning(subnets []string) {
 	ICMP.RunICMPScan(subnets)
+	ARP.RunARPScan()
+	Port.RunPortScan(subnets)
 }
 
 func getHostIPSubnets() ([]string, error) {
@@ -39,22 +43,19 @@ func getHostIPSubnets() ([]string, error) {
 	for _, address := range addrs {
 		if ipNet, ok := address.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
 			if ipNet.IP.To4() != nil {
-				// Parse subnet address from CIDR
-				cidr := ipNet.String()
-				prefix, err := netip.ParsePrefix(cidr)
-				if err != nil {
-					log.Err(err).
-						Str("func", "getHostIPSubnets").
-						Msg(fmt.Sprintf(
-							"Failed to parse prefix from '%s'",
-							cidr,
-						))
-					continue
-				}
-				networkAddr := string(prefix.Masked().String())
+				// Get each address; /24 subnet
+				ipv4 := ipNet.IP.To4()
+				normalized := fmt.Sprintf(
+					"%d.%d.%d.0/24",
+					ipv4[0],
+					ipv4[1],
+					ipv4[2],
+				)
 				
 				// Append each network address to subnets slice
-				subnets = append(subnets, networkAddr)
+				if !slices.Contains(subnets, normalized) {
+					subnets = append(subnets, normalized)
+				}
 			}
 		}
 	}
