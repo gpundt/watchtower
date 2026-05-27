@@ -2,6 +2,7 @@ package api
 
 import (
 	Query "watchtower/internal/api/query"
+	Submission "watchtower/internal/api/submission"
 	TLS "watchtower/internal/api/tls"
 
 	"github.com/rs/zerolog/log"
@@ -9,6 +10,7 @@ import (
 
 func InitializeServerAPI() {
 	Query.InitializeQueryAPI()
+	Submission.InitializeHostMetricsAPIEndpoints()
 
 	TLS.InitializeServermTLS()
 

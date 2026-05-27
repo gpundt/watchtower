@@ -25,12 +25,12 @@ func initializeServerMetricsAPIEndpoints() {
 
 // Function to initialize server_cpu API endpoint
 func initializeServerCPUEndpoint() {
-	http.HandleFunc(Endpoints.ServerCPUEndpoint, makeGetHandler(generateServerCPUResponse))
-	log.Debug().Str("server_cpu", Endpoints.ServerCPUEndpoint).Msg("Server CPU Endpoint Initialized")
+	http.HandleFunc(Endpoints.QueryServerCPU, makeGetHandler(GenerateHostCPUJSON))
+	log.Debug().Str("server_cpu", Endpoints.QueryServerCPU).Msg("Server CPU Endpoint Initialized")
 }
 
 // Helper function to get server CPU information and format into HTTP response
-func generateServerCPUResponse() map[string]any {
+func GenerateHostCPUJSON() map[string]any {
 	info, _ := cpu.Info()
 
 	logicalCores, _ := cpu.Counts(true)
@@ -51,12 +51,12 @@ func generateServerCPUResponse() map[string]any {
 
 // Function to initialize server_memory API endpoint
 func initializeServerMemoryEndpoint() {
-	http.HandleFunc(Endpoints.ServerMemoryEndpoint, makeGetHandler(generateServerMemoryResponse))
-	log.Debug().Str("server_memory", Endpoints.ServerMemoryEndpoint).Msg("Server Memory Endpoint Initialized")
+	http.HandleFunc(Endpoints.QueryServerMemory, makeGetHandler(GenerateHostMemoryJSON))
+	log.Debug().Str("server_memory", Endpoints.QueryServerMemory).Msg("Server Memory Endpoint Initialized")
 }
 
 // Helper function to get server Memory information and format into HTTP response
-func generateServerMemoryResponse() map[string]any {
+func GenerateHostMemoryJSON() map[string]any {
 	v, _ := mem.VirtualMemory()
 
 	return map[string]any{
@@ -70,15 +70,15 @@ func generateServerMemoryResponse() map[string]any {
 
 // Function to initialize server_storage API endpoint
 func initializeServerStorageEndpoint() {
-	http.HandleFunc(Endpoints.ServerStorageEndpoint, makeGetHandler(generateServerStorageResponse))
-	log.Debug().Str("server_storage", Endpoints.ServerStorageEndpoint).Msg("Server Storage Endpoint Initialized")
+	http.HandleFunc(Endpoints.QueryServerStorage, makeGetHandler(GenerateHostStorageJSON))
+	log.Debug().Str("server_storage", Endpoints.QueryServerStorage).Msg("Server Storage Endpoint Initialized")
 }
 
 // Helper function to get server storage information and format into HTTP response
-func generateServerStorageResponse() map[string]any {
+func GenerateHostStorageJSON() map[string]any {
 	var stat syscall.Statfs_t
 	if err := syscall.Statfs("/", &stat); err != nil {
-		log.Err(err).Msg("Failed to generateServerStorageResponse")
+		log.Err(err).Msg("Failed to GenerateServerStorageJSON")
 	}
 
 	// Total storage
@@ -109,18 +109,18 @@ func generateServerStorageResponse() map[string]any {
 
 // Function to initialize server_temp API endpoint
 func initializeServerTempEndpoint() {
-	http.HandleFunc(Endpoints.ServerTempEndpoint, func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc(Endpoints.QueryServerTemp, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		b, _ := json.MarshalIndent(generateServerTempResponse(), "", "  ")
+		b, _ := json.MarshalIndent(GenerateHostTempJSON(), "", "  ")
 		fmt.Fprintf(w, string(b))
 	})
 
-	log.Debug().Str("server_temp", Endpoints.ServerTempEndpoint).Msg("Server Temp Endpoint Initialized")
+	log.Debug().Str("server_temp", Endpoints.QueryServerTemp).Msg("Server Temp Endpoint Initialized")
 }
 
 type TempData struct {
@@ -129,7 +129,7 @@ type TempData struct {
 }
 
 // Helper function to get server Temperature information and format into HTTP response
-func generateServerTempResponse() map[string][]TempData {
+func GenerateHostTempJSON() map[string][]TempData {
 	// response := map[string]any{}
 	response := map[string][]TempData{
 		"data": []TempData{},

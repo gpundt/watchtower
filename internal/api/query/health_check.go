@@ -13,8 +13,8 @@ import (
 )
 
 func initializeHealthCheckAPI() {
-	http.HandleFunc(Endpoints.HealthCheckEndpoint, makeGetHandler(generateHealthCheckResponse))
-	log.Debug().Str("health_check", Endpoints.HealthCheckEndpoint).Msg("Health Check Endpoint: Initialized")
+	http.HandleFunc(Endpoints.QueryHealthCheck, makeGetHandler(generateHealthCheckResponse))
+	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg("Health Check Endpoint: Initialized")
 }
 
 // Generates JSON response for incoming health_check queries
@@ -31,10 +31,10 @@ func QueryHealthCheckEndpoint() {
 	resp, err := TLS.AgentTLSClient.Get(fmt.Sprintf(
 		"%s%s",
 		Config.AgentConfig.Agent.ServerURL,
-		Endpoints.HealthCheckEndpoint,
+		Endpoints.QueryHealthCheck,
 	))
 	if err != nil {
-		log.Err(err).Msg(fmt.Sprintf("%s unavailable", Endpoints.HealthCheckEndpoint))
+		log.Err(err).Msg(fmt.Sprintf("%s unavailable", Endpoints.QueryHealthCheck))
 		return
 	}
 
@@ -50,5 +50,5 @@ func QueryHealthCheckEndpoint() {
 		log.Err(err)
 	}
 
-	log.Debug().Str("health_check", Endpoints.HealthCheckEndpoint).Msg(string(body))
+	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).Msg(string(body))
 }

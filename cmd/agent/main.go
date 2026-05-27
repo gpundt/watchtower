@@ -5,6 +5,7 @@ import (
 
 	API "watchtower/internal/api"
 	Query "watchtower/internal/api/query"
+	Submission "watchtower/internal/api/submission"
 	Config "watchtower/internal/config"
 	Logger "watchtower/pkg/logger"
 )
@@ -26,6 +27,7 @@ func main() {
 
 	for range ticker.C {
 		Query.QueryHealthCheckEndpoint()
+		Submission.SubmitHostMetricsMaster()
 	}
 
 	Logger.Close()
