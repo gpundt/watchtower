@@ -1,15 +1,68 @@
--- 1. Enable TimescaleDB extension
 CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
--- 2. Create host_cpu_usage table
+-- Host CPU Usage table ---------------------------------------
 CREATE TABLE IF NOT EXISTS host_cpu_usage (
     timestamp           TIMESTAMPTZ         NOT NULL,
     host                TEXT                NOT NULL,
-    cpu_used_percentage DOUBLE PRECISION    NOT NULL
-)
+    cpu_used_percentage DOUBLE PRECISION
+);
+SELECT create_hypertable('host_cpu_usage', 'timestamp', if_not_exists => TRUE);
 
--- 3. Covert the table into a hypertable
-SELECT create_hypertable("host_cpu_usage", "timestamp", if_not_exists => TRUE);
+CREATE INDEX idx_cpu_time ON host_cpu_usage (host, timestamp DESC);
 
--- 4. Create an index for common query patterns
-CREATE INDEX ON host_cpu_usage (host, timestamp DESC)
+-- Enable compression
+ALTER TABLE host_cpu_usage SET (
+    timescaledb.compress,
+    timescaledb.compress_segmentby = "host"
+);
+
+-- Host Memory Usage table ------------------------------------
+CREATE TABLE IF NOT EXISTS host_memory_usage (
+    timestamp               TIMESTAMPTZ     NOT NULL,
+    host                    TEXT            NOT NULL,
+    total_memory_bytes      DOUBLE PRECISION,
+    free_memory_bytes       DOUBLE PRECISION,
+    free_memory_percent     DOUBLE PRECISION,
+    used_memory_bytes       DOUBLE PRECISION,
+    used_memory_percent     DOUBLE PRECISION
+);
+SELECT create_hypertable('host_memory_usage', 'timestamp', if_not_exists => TRUE);
+
+CREATE INDEX idx_memory_time ON host_memory_usage (host, timestamp DESC);
+ALTER TABLE host_memory_usage SET (
+    timescaledb.compress,
+    timescaledb.compress_segmentby = "host"
+);
+
+-- Host Storage Usage table ----------------------------------
+CREATE TABLE IF NOT EXISTS host_storage_usage (
+    timestamp               TIMESTAMPTZ     NOT NULL,
+    host                    TEXT            NOT NULL,
+    total_storage_bytes      DOUBLE PRECISION,
+    free_storage_bytes       DOUBLE PRECISION,
+    free_storage_percent     DOUBLE PRECISION,
+    used_storage_bytes       DOUBLE PRECISION,
+    used_storage_percent     DOUBLE PRECISION
+);
+SELECT create_hypertable('host_storage_usage', 'timestamp', if_not_exists => TRUE);
+
+CREATE INDEX idx_storage_time ON host_storage_usage (host, timestamp DESC);
+ALTER TABLE host_storage_usage SET (
+    timescaledb.compress,
+    timescaledb.compress_segmentby = "host"
+);
+
+-- Host Temperature Usage table ------------------------------
+CREATE TABLE IF NOT EXISTS host_temperature (
+    timestamp       TIMESTAMPTZ     NOT NULL,
+    host            TEXT            NOT NULL,
+    sensor_name     TEXT            NOT NULL,
+    temp_celsius    DOUBLE PRECISION    
+);
+SELECT create_hypertable('host_temperature', 'timestamp', if_not_exists =>  TRUE);
+
+CREATE INDEX idx_temp_time ON host_temperature (host, timestamp DESC);
+ALTER TABLE host_temperature SET (
+    timescaledb.compress,
+    timescaledb.compress_segmentby = "host"
+);
