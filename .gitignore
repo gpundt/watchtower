@@ -2,3 +2,5 @@ build/
 vendor/
 logs/
 certs/
+grafana/*
+!grafana/grafana.ini
