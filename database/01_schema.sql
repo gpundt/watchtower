@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS host_memory_usage (
     host                    TEXT            NOT NULL,
     total_memory_bytes      DOUBLE PRECISION,
     free_memory_bytes       DOUBLE PRECISION,
-    free_memory_percent     DOUBLE PRECISION,
     used_memory_bytes       DOUBLE PRECISION,
+    free_memory_percent     DOUBLE PRECISION,
     used_memory_percent     DOUBLE PRECISION
 );
 SELECT create_hypertable('host_memory_usage', 'timestamp', if_not_exists => TRUE);
@@ -38,10 +38,10 @@ ALTER TABLE host_memory_usage SET (
 CREATE TABLE IF NOT EXISTS host_storage_usage (
     timestamp               TIMESTAMPTZ     NOT NULL,
     host                    TEXT            NOT NULL,
-    total_storage_bytes      DOUBLE PRECISION,
-    free_storage_bytes       DOUBLE PRECISION,
+    total_storage_bytes      NUMERIC(20,0) CHECK (large_unsigned_val >= 0),
+    free_storage_bytes       NUMERIC(20,0) CHECK (large_unsigned_val >= 0),
+    used_storage_bytes       NUMERIC(20,0) CHECK (large_unsigned_val >= 0),
     free_storage_percent     DOUBLE PRECISION,
-    used_storage_bytes       DOUBLE PRECISION,
     used_storage_percent     DOUBLE PRECISION
 );
 SELECT create_hypertable('host_storage_usage', 'timestamp', if_not_exists => TRUE);

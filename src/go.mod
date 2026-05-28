@@ -3,6 +3,7 @@ module watchtower
 go 1.25.0
 
 require (
+	github.com/lib/pq v1.12.3
 	github.com/prometheus-community/pro-bing v0.8.0
 	github.com/rs/zerolog v1.35.1
 	github.com/shirou/gopsutil/v3 v3.24.5

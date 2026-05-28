@@ -29,14 +29,15 @@ prep_build_output_dirs:
 
 build_server: prep_build_output_dirs		## Builds watchtower server binary
 	$(call start_step_message,"Building Server Binary")
-	@go mod vendor
-	@go mod tidy
-	@go build -ldflags="-s -w" -o $(SERVER_BINARY) ./cmd/server
+	@cd src && \
+	go mod vendor && \
+	go mod tidy && \
+	go build -ldflags="-s -w" -o $(SERVER_BINARY) ./cmd/server
 	$(call successful)
 
 build_agent: prep_build_output_dirs			## Builds Watchtower agent binary
 	$(call start_step_message,"Building Agent Binary")
-	@go build -ldflags="-s -w" -o $(AGENT_BINARY) ./cmd/agent
+	@cd src && go build -ldflags="-s -w" -o $(AGENT_BINARY) ./cmd/agent
 	$(call successful)
 
 help:										## Prints available make targets
