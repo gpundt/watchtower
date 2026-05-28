@@ -1,0 +1,50 @@
+package handlers
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/rs/zerolog/log"
+)
+
+// helper function to initialize an HTTP endpoint to accept GET requests
+func MakeGetHandler(
+	responseGenerator func() map[string]any,
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		log.Debug().Str("url", r.URL.Path).
+			Str("request_addr", r.RemoteAddr).
+			Str("method", r.Method).
+			Msg("")
+
+		w.Header().Set("Content-Type", "application/json")
+		b, _ := json.MarshalIndent(responseGenerator(), "", "  ")
+		fmt.Fprintf(w, string(b))
+	}
+}
+
+// Helper function to create an HTTP POST endpoint and populate a specific ouptut struct
+func MakePostHandler[T any](outputStruct T) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&outputStruct); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		log.Debug().Str("url", r.URL.Path).
+			Str("request_addr", r.RemoteAddr).
+			Str("method", r.Method).
+			Msg(fmt.Sprintf("%+v", outputStruct))
+	}
+}

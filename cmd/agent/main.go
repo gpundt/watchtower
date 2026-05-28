@@ -30,7 +30,7 @@ func main() {
 	// Every Config.AgentConfig.Agent.PushIntervalSeconds
 	for range ticker.C {
 		Query.QueryHealthCheckEndpoint()
-		Submission.SubmitHostMetricsMaster()
+		Submission.SubmitAllHostMetrics()
 	}
 
 	Logger.Close()

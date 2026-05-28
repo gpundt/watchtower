@@ -8,6 +8,7 @@ import (
 	"time"
 
 	Endpoints "watchtower/pkg/endpoints"
+	Handlers "watchtower/internal/api/handlers"
 
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -15,19 +16,13 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 )
 
-// Root function to initialize all api endpoints related to server metrics
-func initializeServerMetricsAPIEndpoints() {
-	initializeServerCPUEndpoint()
-	initializeServerStorageEndpoint()
-	initializeServerMemoryEndpoint()
-	initializeServerTempEndpoint()
-}
 
+// ----- Server CPU Metrics ---------------------------------------------
 // Function to initialize server_cpu API endpoint
 func initializeServerCPUEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerCPU,
-		makeGetHandler(GenerateHostCPUJSON),
+		Handlers.MakeGetHandler(GenerateHostCPUJSON),
 	)
 	log.Debug().Str("server_cpu", Endpoints.QueryServerCPU).
 		Msg("Server CPU Endpoint Initialized")
@@ -53,11 +48,12 @@ func GenerateHostCPUJSON() map[string]any {
 	}
 }
 
+// ----- Server Memory Metrics ------------------------------------------
 // Function to initialize server_memory API endpoint
 func initializeServerMemoryEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerMemory,
-		makeGetHandler(GenerateHostMemoryJSON),
+		Handlers.MakeGetHandler(GenerateHostMemoryJSON),
 	)
 	log.Debug().Str("server_memory", Endpoints.QueryServerMemory).
 		Msg("Server Memory Endpoint Initialized")
@@ -76,11 +72,12 @@ func GenerateHostMemoryJSON() map[string]any {
 	}
 }
 
+// ----- Server Storage Metrics ----------------------------------------
 // Function to initialize server_storage API endpoint
 func initializeServerStorageEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerStorage,
-		makeGetHandler(GenerateHostStorageJSON),
+		Handlers.MakeGetHandler(GenerateHostStorageJSON),
 	)
 	log.Debug().Str("server_storage", Endpoints.QueryServerStorage).
 		Msg("Server Storage Endpoint Initialized")
@@ -119,6 +116,8 @@ func GenerateHostStorageJSON() map[string]any {
 	}
 }
 
+
+// ----- Server Temperature Metrics -----------------------------------
 // Function to initialize server_temp API endpoint
 func initializeServerTempEndpoint() {
 	http.HandleFunc(Endpoints.QueryServerTemp, func(w http.ResponseWriter, r *http.Request) {

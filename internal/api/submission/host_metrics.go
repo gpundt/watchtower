@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	Handlers "watchtower/internal/api/handlers"
 	Query "watchtower/internal/api/query"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
@@ -14,6 +15,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// ----- Metrics Submission ------------------------------------------------
 type MetricsStructConstraint interface {
 	map[string]any | map[string][]Query.TempData
 }
@@ -55,6 +57,7 @@ func submitHostMetrics[T MetricsStructConstraint](
 		Msg("Metrics: Submitted")
 }
 
+// ----- Host CPU Metrics ------------------------------------------------
 // Struct to be populated with incoming host CPU metrics submission
 type HostCPUBody struct {
 	Model          string  `json:"cpu_model"`
@@ -72,12 +75,13 @@ func initializeHostCPUSubmissionEndpoint() {
 	var outputStruct HostCPUBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostCPU),
-		makePostHandler(outputStruct),
+		Handlers.MakePostHandler[HostCPUBody](outputStruct),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostCPU).
 		Msg("Host CPU Submission Endpoint: Initialized")
 }
 
+// ----- Host Memory Metrics ----------------------------------------------
 // Struct to be populated with Incoming host memory metrics submission
 type HostMemoryBody struct {
 	TotalMemoryBytes     float64 `json:"total_memory_bytes"`
@@ -92,12 +96,14 @@ func initializeHostMemorySubmissionEndpoint() {
 	var outputStruct HostMemoryBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostMemory),
-		makePostHandler(outputStruct),
+		Handlers.MakePostHandler[HostMemoryBody](outputStruct),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostMemory).
 		Msg("Host Memory Submission Endpoint: Initialized")
 }
 
+
+// ----- Host Storage Metrics ---------------------------------------------
 // Struct to be populated with Incoming host storage metrics submission
 type HostStorageBody struct {
 	TotalStoageBytes      uint64 `json:"total_storage_bytes"`
@@ -112,13 +118,14 @@ func initializeHostStorageSubmissionEndpoint() {
 	var outputStruct HostStorageBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostStorage),
-		makePostHandler(outputStruct),
+		Handlers.MakePostHandler[HostStorageBody](outputStruct),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostStorage).
 		Msg("Host Storage Submission Endpoint: Initialized")
 
 }
 
+// ----- Host Temperature Metrics------------------------------------------
 // Struct to be populated with Incoming host Temperature metrics submission
 type HostTempBody struct {
 	Data []Query.TempData `json:"data"`
@@ -129,7 +136,7 @@ func initializeHostTempSubmissionEndpoint() {
 	var outputStruct HostTempBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostTemp),
-		makePostHandler(outputStruct),
+		Handlers.MakePostHandler[HostTempBody](outputStruct),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostTemp).
 		Msg("Host Temp Submission Endpoint: Initialized")

@@ -2,6 +2,7 @@ package api
 
 import (
 	Query "watchtower/internal/api/query"
+	Registration "watchtower/internal/api/registration"
 	Submission "watchtower/internal/api/submission"
 	TLS "watchtower/internal/api/tls"
 
@@ -9,8 +10,9 @@ import (
 )
 
 func InitializeServerAPI() {
-	Query.InitializeQueryAPI()
-	Submission.InitializeHostMetricsAPIEndpoints()
+	Query.InitializeQueryEndpoints()
+	Submission.InitializeSubmissionEndpoints()
+	Registration.InitializeRegistrationEndpoints()
 
 	TLS.InitializeServermTLS()
 

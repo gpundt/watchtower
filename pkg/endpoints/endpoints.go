@@ -4,6 +4,7 @@ const (
 	// Roots
 	rootEndpoint       = "/api/v1"
 	queryEndpoint      = rootEndpoint + "/query"
+	RegistrationEndpoint = rootEndpoint + "/registration"
 	SubmissionEndpoint = rootEndpoint + "/submit"
 
 	// Queries
@@ -12,6 +13,10 @@ const (
 	QueryServerMemory  = queryEndpoint + "/server_memory"
 	QueryServerStorage = queryEndpoint + "/server_storage"
 	QueryServerTemp    = queryEndpoint + "/server_temp"
+	
+	// Registrations
+	RegisterAgent = RegistrationEndpoint + "/agent"
+	RegisterUser = RegistrationEndpoint + "/user"
 
 	// Submissions
 	SubmitHostCPU     = SubmissionEndpoint + "/host_cpu"
