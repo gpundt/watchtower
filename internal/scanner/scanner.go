@@ -1,6 +1,6 @@
 package scanner
 
-import(
+import (
 	"errors"
 	"fmt"
 	"net"
@@ -51,7 +51,7 @@ func getHostIPSubnets() ([]string, error) {
 					ipv4[1],
 					ipv4[2],
 				)
-				
+
 				// Append each network address to subnets slice
 				if !slices.Contains(subnets, normalized) {
 					subnets = append(subnets, normalized)
@@ -68,6 +68,6 @@ func getHostIPSubnets() ([]string, error) {
 			Str("func", "getHostIPSubnets").
 			Msg(fmt.Sprintf("%s", subnets))
 	}
-	
+
 	return subnets, nil
 }

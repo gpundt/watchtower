@@ -5,9 +5,9 @@ import (
 	// "io"
 	"net/http"
 
-	Endpoints "watchtower/pkg/endpoints"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
+	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
 )
@@ -18,7 +18,7 @@ func initializeHealthCheckAPIEndpoint() {
 		makeGetHandler(generateHealthCheckResponse),
 	)
 	log.Debug().Str("health_check", Endpoints.QueryHealthCheck).
-	Msg("Health Check Endpoint: Initialized")
+		Msg("Health Check Endpoint: Initialized")
 }
 
 // Generates JSON response for incoming health_check queries

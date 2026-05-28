@@ -4,10 +4,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-
 type ARPScanResults struct {
-	ActiveHosts		[]string
-	InactiveHosts	[]string
+	ActiveHosts   []string
+	InactiveHosts []string
 }
 
 func RunARPScan() {

@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"net/http"
 
-	Endpoints "watchtower/pkg/endpoints"
 	Query "watchtower/internal/api/query"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
+	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
 )
@@ -134,4 +134,3 @@ func initializeHostTempSubmissionEndpoint() {
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostTemp).
 		Msg("Host Temp Submission Endpoint: Initialized")
 }
-

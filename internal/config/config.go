@@ -26,10 +26,10 @@ type ServerConfigWrapper struct {
 		SSLMode  string `yaml:"ssl_mode"`
 	} `yaml:"database"`
 	Scanner struct {
-		Enabled                 bool     `yaml:"enabled"`
-		IntervalMinutes         int      `yaml:"interval_minutes"`
-		MaxConcurrentScans		int		 `yaml:"max_concurrent_scans"`
-		Ports                   []int    `yaml:"ports"`
+		Enabled            bool  `yaml:"enabled"`
+		IntervalMinutes    int   `yaml:"interval_minutes"`
+		MaxConcurrentScans int   `yaml:"max_concurrent_scans"`
+		Ports              []int `yaml:"ports"`
 	} `yaml:"scanner"`
 	Alerts struct {
 		Discord struct {
@@ -53,13 +53,13 @@ type AgentConfigWrapper struct {
 	Agent struct {
 		PushIntervalSeconds int    `yaml:"push_interval_seconds"`
 		ServerURL           string `yaml:"server_url"`
-		Name				string `yaml:"name"`
+		Name                string `yaml:"name"`
 		Verbose             bool   `yaml:"verbose"`
 	} `yaml:"agent"`
 	TLS struct {
-		CACert	string	`yaml:"ca_cert"`
-		AgentCert	string	`yaml:"agent_cert"`
-		AgentKey	string	`yaml:"agent_key"`
+		CACert    string `yaml:"ca_cert"`
+		AgentCert string `yaml:"agent_cert"`
+		AgentKey  string `yaml:"agent_key"`
 	} `yaml:"tls"`
 }
 

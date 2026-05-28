@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	Endpoints "watchtower/pkg/endpoints"
 	Query "watchtower/internal/api/query"
+	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
 )
@@ -48,8 +48,8 @@ type OutputStructConstraint interface {
 
 // Master function to create a POST endpoint that populates an outputStruct
 func makePostHandler[T OutputStructConstraint](
-		outputStruct T,
-	) http.HandlerFunc {
+	outputStruct T,
+) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

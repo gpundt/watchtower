@@ -1,7 +1,9 @@
 package port
 
 import (
+	"fmt"
 	"net"
+	"net/netip"
 	"slices"
 	"sync"
 	"time"
@@ -12,16 +14,16 @@ import (
 )
 
 type PortScanResults struct {
-	ActiveHosts map[]string[]int
+	ActiveHosts   map[string][]int
 	InactiveHosts []string
 }
 
 func RunPortScan(subnets []string) {
-	log.Info().Msg("Beginning ARP Scan")
+	log.Info().Msg("Beginning Port Scan")
 
 	scanResults := PortScanResults{
-		ActiveHosts := map[]string{},
-		InactiveHosts := []string{},
+		ActiveHosts:   map[string][]int{},
+		InactiveHosts: []string{},
 	}
 	guard := make(
 		chan struct{},
@@ -29,19 +31,16 @@ func RunPortScan(subnets []string) {
 	)
 
 	var wg sync.WaitGroup
-	
+
 	// Iterate over each subnet in subnets
 	for _, subnet := range subnets {
-		_, ipv4Net, _ := net.ParseCIDR(subnet)
-		mask := binary.BigEndian.Uint32(ipv4Net.Mask)
-		networkStart := binary.BigEndian.Uint32(ipv4Net.IP)
-		networkEnd := (networkStart & mask) | ^mask
+		prefix, err := netip.ParsePrefix(subnet)
+		if err != nil {
+			log.Err(err).Str("func", "RunPortScan").Msg("")
+		}
 
-		for i := networkStart; i <= networkEnd; i++ {
-			emptyIP := make(net.IP, 4)
-			binary.BigEndian.PutUint32(emptyIP, i)
-			hostIP := emptyIP.String()
-			
+		// for i := networkStart; i <= networkEnd; i++ {
+		for addr := prefix.Addr(); prefix.Contains(addr); addr = addr.Next() {
 			wg.Add(1)
 			guard <- struct{}{} // Block if max number of goroutines alrady running
 
@@ -53,7 +52,7 @@ func RunPortScan(subnets []string) {
 				activePorts := []int{}
 				for _, port := range Config.ServerConfig.Scanner.Ports {
 					// Create full destination
-					address := net.JoinHostPort(ip, port)
+					address := fmt.Sprintf("%s:%d", ip, port)
 
 					// Set a shgort timeout
 					timeout := 2 * time.Second
@@ -61,22 +60,26 @@ func RunPortScan(subnets []string) {
 					if err == nil {
 						hostActive = true
 						activePorts = append(activePorts, port)
+						conn.Close()
 					}
-					conn.Close()
+
 				}
 
 				// After host scan has completed, if host had any ports open
 				if hostActive {
 					scanResults.ActiveHosts[ip] = activePorts
+					log.Info().Str("ip", ip).
+						Msg(fmt.Sprintf("Open Ports: %v", activePorts))
 				} else {
 					if !slices.Contains(scanResults.InactiveHosts, ip) {
 						scanResults.InactiveHosts = append(
 							scanResults.InactiveHosts,
 							ip,
 						)
+						// log.Debug().Str("ip", ip).Msg("No ports found.")
 					}
 				}
-			}(hostIP)
+			}(addr.String())
 		}
 	}
 

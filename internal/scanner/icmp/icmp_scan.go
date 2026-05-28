@@ -1,28 +1,26 @@
 package icmp
 
-
 import (
-	"encoding/binary"
+	"net/netip"
 	"sync"
 	"time"
-	"net"
 
 	Config "watchtower/internal/config"
 
-	"github.com/prometheus-community/pro-bing"
+	probing "github.com/prometheus-community/pro-bing"
 	"github.com/rs/zerolog/log"
 )
 
 type ICMPScanResults struct {
-	ActiveHosts		[]string
-	InactiveHosts	[]string
+	ActiveHosts   []string
+	InactiveHosts []string
 }
 
 func RunICMPScan(subnets []string) {
 	log.Info().Msg("Beginning ICMP Scan")
-	
+
 	scanResults := ICMPScanResults{
-		ActiveHosts: []string{},
+		ActiveHosts:   []string{},
 		InactiveHosts: []string{},
 	}
 	guard := make(
@@ -31,37 +29,33 @@ func RunICMPScan(subnets []string) {
 	)
 
 	var wg sync.WaitGroup
-	
+
 	// Iterate over each subnet in subnets
 	for _, subnet := range subnets {
-		_, ipv4Net, _ := net.ParseCIDR(subnet)
-		mask := binary.BigEndian.Uint32(ipv4Net.Mask)
-		networkStart := binary.BigEndian.Uint32(ipv4Net.IP)
-		networkEnd := (networkStart & mask) | ^mask
+		prefix, err := netip.ParsePrefix(subnet)
+		if err != nil {
+			log.Err(err).Str("func", "RunPortScan").Msg("")
+		}
 
-		for i := networkStart; i <= networkEnd; i++ {
-			emptyIP := make(net.IP, 4)
-			binary.BigEndian.PutUint32(emptyIP, i)
-			hostIP := emptyIP.String()
-			
+		// for i := networkStart; i <= networkEnd; i++ {
+		for addr := prefix.Addr(); prefix.Contains(addr); addr = addr.Next() {
 			wg.Add(1)
 			guard <- struct{}{} // Block if max number of goroutines alrady running
 
 			go func(ip string) {
 				defer wg.Done()
 				defer func() { <-guard }() // Release the slot in the semphore
-			
+
 				// Create object to ping hosts
 				pinger, err := probing.NewPinger(ip)
 				if err != nil {
 					log.Err(err).Str("ip", ip).Msg("")
 					scanResults.InactiveHosts = append(
 						scanResults.InactiveHosts,
-						hostIP,
+						ip,
 					)
-
 					return
-				}	
+				}
 
 				pinger.Count = 2
 				pinger.Timeout = 2 * time.Second
@@ -72,19 +66,19 @@ func RunICMPScan(subnets []string) {
 
 				// If error or no response, we missed
 				if err != nil || stats.PacketsRecv == 0 {
-					log.Debug().Str("ip", ip).Msg("Probe Missed")
+					// log.Debug().Str("ip", ip).Msg("ICMP Probe Missed")
 					scanResults.InactiveHosts = append(
 						scanResults.InactiveHosts,
-						hostIP,
+						ip,
 					)
 				} else {
-					log.Debug().Str("ip", ip).Msg("Probe Hit!")
+					log.Debug().Str("ip", ip).Msg("ICMP Probe Hit!")
 					scanResults.ActiveHosts = append(
 						scanResults.ActiveHosts,
-						hostIP,
+						ip,
 					)
 				}
-			}(hostIP)
+			}(addr.String())
 		}
 	}
 
