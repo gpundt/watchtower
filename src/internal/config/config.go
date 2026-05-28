@@ -17,6 +17,11 @@ type ServerConfigWrapper struct {
 		Secret  string `yaml:"secret"`
 		Verbose bool   `yaml:"verbose"`
 	} `yaml:"server"`
+	TLS struct {
+		CACert     string `yaml:"ca_cert"`
+		ServerCert string `yaml:"server_cert"`
+		ServerKey  string `yaml:"server_key"`
+	} `yaml:"tls"`
 	Database struct {
 		Host     string `yaml:"host"`
 		Port     int    `yaml:"port"`

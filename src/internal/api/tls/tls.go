@@ -17,8 +17,8 @@ var TLSServer *http.Server
 func InitializeServermTLS() {
 	// 1. Load server's cert and key
 	cert, loadErr := tls.LoadX509KeyPair(
-		Config.ServerPaths.CertFilepath,
-		Config.ServerPaths.KeyFilepath,
+		Config.ServerConfig.TLS.ServerCert,
+		Config.ServerConfig.TLS.ServerKey,
 	)
 	if loadErr != nil {
 		log.Fatal().Err(loadErr).
@@ -27,7 +27,7 @@ func InitializeServermTLS() {
 	}
 
 	// 2. Load the CA cert that signed these certificates
-	caCert, readErr := ioutil.ReadFile(Config.ServerPaths.CACertFilepath)
+	caCert, readErr := ioutil.ReadFile(Config.ServerConfig.TLS.CACert)
 	if readErr != nil {
 		log.Fatal().Err(readErr).
 			Str("func", "InitializeServermTLS").
@@ -56,8 +56,8 @@ var AgentTLSClient *http.Client
 func InitializeAgentmTLS() {
 	// 1. Load the client's cert and key
 	cert, loadErr := tls.LoadX509KeyPair(
-		Config.AgentPaths.CertFilepath,
-		Config.AgentPaths.KeyFilepath,
+		Config.AgentConfig.TLS.AgentCert,
+		Config.AgentConfig.TLS.AgentKey,
 	)
 	if loadErr != nil {
 		log.Fatal().Err(loadErr).
@@ -66,7 +66,7 @@ func InitializeAgentmTLS() {
 	}
 
 	// 2. Load the CA cet that signed the server's certificate
-	caCert, readErr := ioutil.ReadFile(Config.AgentPaths.CACertFilepath)
+	caCert, readErr := ioutil.ReadFile(Config.AgentConfig.TLS.CACert)
 	if readErr != nil {
 		log.Fatal().Err(readErr).
 			Str("func", "InitializeAgentmTLS").
