@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"time"
 	"net/http"
 
+	Database "watchtower/internal/database"
 	Handlers "watchtower/internal/api/handlers"
 	Query "watchtower/internal/api/query"
 	TLS "watchtower/internal/api/tls"
@@ -17,7 +19,7 @@ import (
 
 // ----- Metrics Submission ------------------------------------------------
 type MetricsStructConstraint interface {
-	map[string]any | map[string][]Query.TempData
+	map[string]any | Query.TemperatureResponse
 }
 
 // Agent-side function to submit gathered host metrics
@@ -60,6 +62,7 @@ func submitHostMetrics[T MetricsStructConstraint](
 // ----- Host CPU Metrics ------------------------------------------------
 // Struct to be populated with incoming host CPU metrics submission
 type HostCPUBody struct {
+	Host	   	   string  `json:"host"`
 	Model          string  `json:"cpu_model"`
 	Family         string  `json:"cpu_family"`
 	ModelName      string  `json:"cpu_model_name"`
@@ -72,10 +75,20 @@ type HostCPUBody struct {
 
 // Initializes server-side endpoint to receive CPU metrics
 func initializeHostCPUSubmissionEndpoint() {
-	var outputStruct HostCPUBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostCPU),
-		Handlers.MakePostHandler[HostCPUBody](outputStruct),
+		Handlers.MakePostHandler[HostCPUBody](func(body HostCPUBody) error {
+			err := Database.InsertHostCPUUsage(
+				time.Now(),
+				body.Host,
+				body.UsedPercentage,
+			)
+			if err != nil {
+				log.Err(err).Str("endpoint", Endpoints.SubmitHostCPU).Msg("")
+				return err
+			}
+			return nil
+		}),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostCPU).
 		Msg("Host CPU Submission Endpoint: Initialized")
@@ -84,6 +97,7 @@ func initializeHostCPUSubmissionEndpoint() {
 // ----- Host Memory Metrics ----------------------------------------------
 // Struct to be populated with Incoming host memory metrics submission
 type HostMemoryBody struct {
+	Host				 string	 `json:"host"`
 	TotalMemoryBytes     float64 `json:"total_memory_bytes"`
 	FreeMemoryBytes      float64 `json:"free_memory_bytes"`
 	FreeMemoryPercentage float64 `json:"free_memory_percentage"`
@@ -93,10 +107,25 @@ type HostMemoryBody struct {
 
 // Initializes server-side endpoint to receive memory metrics
 func initializeHostMemorySubmissionEndpoint() {
-	var outputStruct HostMemoryBody
+
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostMemory),
-		Handlers.MakePostHandler[HostMemoryBody](outputStruct),
+		Handlers.MakePostHandler[HostMemoryBody](func(body HostMemoryBody) error {
+			err := Database.InsertHostMemoryUsage(
+				time.Now(),
+				body.Host,
+				body.TotalMemoryBytes,
+				body.FreeMemoryBytes,
+				body.UsedMemoryBytes,
+				body.FreeMemoryPercentage,
+				body.UsedMemoryPercentage,
+			)
+			if err != nil {
+				log.Err(err).Str("endpoint", Endpoints.SubmitHostMemory).Msg("")
+				return err
+			}
+			return nil
+		}),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostMemory).
 		Msg("Host Memory Submission Endpoint: Initialized")
@@ -106,19 +135,34 @@ func initializeHostMemorySubmissionEndpoint() {
 // ----- Host Storage Metrics ---------------------------------------------
 // Struct to be populated with Incoming host storage metrics submission
 type HostStorageBody struct {
-	TotalStoageBytes      uint64 `json:"total_storage_bytes"`
-	FreeStorageBytes      uint64 `json:"free_storage_bytes"`
-	FreeStoragePercentage string `json:"free_storage_percentage"`
-	UsedStorageBytes      uint64 `json:"used_storage_bytes"`
-	UsedStoragePercentage string `json:"used_storage_percentage"`
+	Host				  string  `json:"host"`
+	TotalStorageBytes     uint64  `json:"total_storage_bytes"`
+	FreeStorageBytes      uint64  `json:"free_storage_bytes"`
+	FreeStoragePercentage float64 `json:"free_storage_percentage"`
+	UsedStorageBytes      uint64  `json:"used_storage_bytes"`
+	UsedStoragePercentage float64 `json:"used_storage_percentage"`
 }
 
 // Initializes server-side endpoint to receive storage metrics
 func initializeHostStorageSubmissionEndpoint() {
-	var outputStruct HostStorageBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostStorage),
-		Handlers.MakePostHandler[HostStorageBody](outputStruct),
+		Handlers.MakePostHandler[HostStorageBody](func(body HostStorageBody) error {
+			err := Database.InsertHostStorageUsage(
+				time.Now(),
+				body.Host,
+				body.TotalStorageBytes,
+				body.FreeStorageBytes,
+				body.UsedStorageBytes,
+				body.FreeStoragePercentage,
+				body.UsedStoragePercentage,
+			)
+			if err != nil {
+				log.Err(err).Str("endpoint", Endpoints.SubmitHostStorage).Msg("")
+				return err
+			}
+			return nil
+		}),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostStorage).
 		Msg("Host Storage Submission Endpoint: Initialized")
@@ -128,15 +172,26 @@ func initializeHostStorageSubmissionEndpoint() {
 // ----- Host Temperature Metrics------------------------------------------
 // Struct to be populated with Incoming host Temperature metrics submission
 type HostTempBody struct {
-	Data []Query.TempData `json:"data"`
+	Host string 		  `json:"host"`
+	Data []Query.SensorData `json:"data"`
 }
 
 // Initializes server-side endpoint to receive temperature metrics
 func initializeHostTempSubmissionEndpoint() {
-	var outputStruct HostTempBody
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostTemp),
-		Handlers.MakePostHandler[HostTempBody](outputStruct),
+		Handlers.MakePostHandler[HostTempBody](func(body HostTempBody) error {
+			err := Database.InsertHostTemperature(
+				time.Now(),
+				body.Host,
+				body.Data,
+			)
+			if err != nil {
+				log.Err(err).Str("endpoint", Endpoints.SubmitHostTemp).Msg("")
+				return err
+			}
+			return nil
+		}),
 	)
 	log.Debug().Str("host_cpu", Endpoints.SubmitHostTemp).
 		Msg("Host Temp Submission Endpoint: Initialized")

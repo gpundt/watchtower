@@ -44,7 +44,7 @@ func GenerateHostCPUJSON() map[string]any {
 		"cpu_cache_size":      info[0].CacheSize,
 		"cpu_logical_cores":   logicalCores,
 		"cpu_physical_cores":  physicalCores,
-		"cpu_used_percentage": usedPercentage[0],
+		"cpu_used_percentage": usedPercentage[0] * 100,
 	}
 }
 
@@ -95,17 +95,11 @@ func GenerateHostStorageJSON() map[string]any {
 
 	// Free storage
 	freeStorageBytes := stat.Bfree * uint64(stat.Bsize)
-	freeStoragePercentage := fmt.Sprintf(
-		"%.2f",
-		(float64(freeStorageBytes)/float64(totalStorageBytes))*100,
-	)
+	freeStoragePercentage := (float64(freeStorageBytes)/float64(totalStorageBytes))*100
 
 	// Used storage
 	usedStorageBytes := totalStorageBytes - freeStorageBytes
-	usedStoragePercentage := fmt.Sprintf(
-		"%.2f",
-		(float64(usedStorageBytes)/float64(totalStorageBytes))*100,
-	)
+	usedStoragePercentage := (float64(usedStorageBytes)/float64(totalStorageBytes))*100
 
 	return map[string]any{
 		"total_storage_bytes":     totalStorageBytes,
@@ -135,35 +129,42 @@ func initializeServerTempEndpoint() {
 		Msg("Server Temp Endpoint Initialized")
 }
 
-type TempData struct {
+type SensorData struct {
 	Sensor  string `json:"sensor"`
-	Celsius any    `json:"celsius"`
+	Celsius *float64    `json:"celsius"`
+}
+
+type TemperatureResponse struct {
+	Host string `json:"host"`
+	Data []SensorData `json:"data"`
 }
 
 // Helper function to get server Temperature information and format into HTTP response
-func GenerateHostTempJSON() map[string][]TempData {
+func GenerateHostTempJSON() TemperatureResponse {
 	// response := map[string]any{}
-	response := map[string][]TempData{
-		"data": []TempData{},
+	response := TemperatureResponse{
+		Host: "watchtower_server",
+		Data: []SensorData{},
 	}
 
 	temps, err := host.SensorsTemperatures()
 	if err != nil || len(temps) == 0 {
 		//log.Error().Str("server_temp", "Unavailable").Msg("Failed to get host.SensorsTemperatures()")
-		newTempData := TempData{
+		newSensorData := SensorData{
 			Sensor:  "Temperature Not Available",
 			Celsius: nil,
 		}
-		response["data"] = append(response["data"], newTempData)
+		response.Data = append(response.Data, newSensorData)
 	}
 
 	for _, t := range temps {
 		sensor := fmt.Sprintf("sensor_%s", t.SensorKey)
-		newTempData := TempData{
+		temp := t.Temperature
+		newSensorData := SensorData{
 			Sensor:  sensor,
-			Celsius: t.Temperature,
+			Celsius: &temp,
 		}
-		response["data"] = append(response["data"], newTempData)
+		response.Data = append(response.Data, newSensorData)
 	}
 
 	return response

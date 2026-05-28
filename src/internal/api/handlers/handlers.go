@@ -30,13 +30,14 @@ func MakeGetHandler(
 }
 
 // Helper function to create an HTTP POST endpoint and populate a specific ouptut struct
-func MakePostHandler[T any](outputStruct T) http.HandlerFunc {
+func MakePostHandler[T any](callback func(T) error) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
+		var outputStruct T
 		if err := json.NewDecoder(r.Body).Decode(&outputStruct); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -46,5 +47,13 @@ func MakePostHandler[T any](outputStruct T) http.HandlerFunc {
 			Str("request_addr", r.RemoteAddr).
 			Str("method", r.Method).
 			Msg(fmt.Sprintf("%+v", outputStruct))
+
+		if err := callback(outputStruct); err == nil {
+			log.Err(err).Str("url", r.URL.Path).Msg("Callback failed")
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
 	}
 }
