@@ -102,6 +102,7 @@ function main() {
     remove_previous_installation
     prep_important_dirs
     build_server_binary
+    ./generate_server_certs.sh
     move_important_files
     start_systemd_service
     recap

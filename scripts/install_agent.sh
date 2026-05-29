@@ -96,6 +96,7 @@ function recap() {
 function main() {
     prep_important_dirs
     build_agent_binary
+    ./generate_agent_certs.sh $AGENT_HOSTNAME
     move_important_files
     start_systemd_service
     recap

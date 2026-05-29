@@ -19,8 +19,17 @@ This server implements the following technologies / protocols:
 ### Server
 
 #### Systemd
-1) Generate server-side certificates: `cd scripts && ./generate_server_certs.sh`
-2) Run the local server install script: `cd scripts && ./install_server.sh`
+1) Run the local server install script: `cd scripts && ./install_server.sh`
+
+This will:
+- Remove any previous local Watchtower server installation
+- Create important directories
+- Build the watchtower_server Golang binary
+- Generate server-side certs
+- Relocate important configs
+- Start the watchtower_server Systemd service
+
+2) View logs with: `sudo systemctl status watchtower_server.service`
 
 #### Docker
 
@@ -29,9 +38,17 @@ This server implements the following technologies / protocols:
 ### Agent
 
 #### Systemd
-1) Generate agent-side certificates: `cd scripts && ./generate_agent_certs.sh`
-2) Run the local agent install script: `cd scripts && ./install_agent.sh`
+1) Run the local agent install script: `cd scripts && ./install_agent.sh AGENT_HOSTNAME`
+- e.g.: `cd scripts && ./install_agent.sh test1`
 
+This will:
+- Create important directries (if they're not already present)
+- Build the watchtower_agent Golang binary
+- Generate agent-side certs
+- Relocate important configs
+- Start the watchtower_agent Systemd service
+
+2) View logs with: `sudo systemctl status watchtower_agent.service`
 
 #### Docker
 
@@ -46,6 +63,11 @@ This server implements the following technologies / protocols:
 
 1) Run the local server uninstall script: `cd scripts && ./uninstall_server.sh`
 
+This will:
+- Stop the watchtower_server Systemd service
+- Remove the important directories created during installation
+- Preserve `/var/log/watchtower` for debugging
+
 #### Docker
 
 - IN PROGRESS
@@ -55,6 +77,9 @@ This server implements the following technologies / protocols:
 #### Systemd
 
 1) Run the local agent uninstall script: `cd scripts && ./uninstall_agent.sh`
+
+This will:
+- Stop the watchtower_agent Systemd service
 
 #### Docker
 
