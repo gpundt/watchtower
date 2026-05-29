@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./helpers.sh
+source ./_helpers.sh
 
 if [ "$#" -eq 0 ]; then
     echo "Error: No agent hostname provided"

@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./helpers.sh
+source ./_helpers.sh
 
 if [ "$#" -eq 0 ]; then
     echo "Error: No agent hostname provided"
@@ -31,6 +31,13 @@ SRC_AGENT_SERVICE=./watchtower_agent.service
 DST_AGENT_SERVICE=/etc/systemd/system/watchtower_agent.service
 
 ### Core Functionality ###
+function remove_previous_installation() {
+    if systemctl list-unit-files watchtower_agent.service >/dev/null 2>&1; then
+        sudo systemctl stop watchtower_agent.service
+        sudo systemctl disable watchtower_agent.service
+    fi
+}
+
 function prep_important_dirs() {
     start_step_message "Creating Important Directories"
     _create_dir $ETC_DIRECTORY
@@ -94,9 +101,10 @@ function recap() {
 }
 
 function main() {
+    remove_previous_installation
     prep_important_dirs
     build_agent_binary
-    ./generate_agent_certs.sh $AGENT_HOSTNAME
+    ./_generate_agent_certs.sh $AGENT_HOSTNAME
     move_important_files
     start_systemd_service
     recap

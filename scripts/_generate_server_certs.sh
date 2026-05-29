@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./helpers.sh
+source ./_helpers.sh
 
 CERTS_ROOT_DIR="../certs"
 CA_CERT="${CERTS_ROOT_DIR}/ca/ca.crt"

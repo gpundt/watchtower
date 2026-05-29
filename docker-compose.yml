@@ -35,6 +35,24 @@ services:
       - watchtower_net
     depends_on:
       - db
+  
+  server:
+    image: busybox:1.38.0
+    container_name: watchtower_server
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./config/server.yaml:/etc/watchtower/server.yaml
+      - ./build/watchtower_server:/opt/watchtower/bin/watchtower_server
+      - ./certs/ca:/opt/watchtower/tls
+      - ./certs/server:/opt/watchtower/tls
+      - ./src:/opt/watchtower/src
+    command: ["/opt/watchtower/bin/watchtower_server"]
+    networks:
+      - watchtower_net
+    depends_on:
+      - db
 
 volumes:
   watchtower_db_volume:

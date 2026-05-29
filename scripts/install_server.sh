@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./helpers.sh
+source ./_helpers.sh
 
 ### Important Directories ###
 ETC_DIRECTORY=/etc/watchtower
@@ -26,6 +26,11 @@ DST_SERVER_SERVICE=/etc/systemd/system/watchtower_server.service
 
 ### Core Functionality ###
 function remove_previous_installation() {
+    if systemctl list-unit-files watchtower_server.service >/dev/null 2>&1; then
+        sudo systemctl stop watchtower_server.service
+        sudo systemctl disable watchtower_server.service
+    fi
+    
     sudo rm -rf $DST_SERVER_CONFIG \
         $DST_SERVER_BINARY \
         $DST_CA_CERT \
@@ -102,7 +107,7 @@ function main() {
     remove_previous_installation
     prep_important_dirs
     build_server_binary
-    ./generate_server_certs.sh
+    ./_generate_server_certs.sh
     move_important_files
     start_systemd_service
     recap

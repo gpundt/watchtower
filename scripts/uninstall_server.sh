@@ -1,5 +1,5 @@
 #!/bin/bash
-source ./helpers.sh
+source ./_helpers.sh
 
 ### Important Directories ###
 ETC_DIRECTORY=/etc/watchtower
@@ -13,12 +13,14 @@ DST_SERVER_SERVICE=/etc/systemd/system/watchtower_server.service
 
 ### Core Functionality ###
 function stop_systemd_service() {
+    start_step_message "Stopping Systemd Service"
     if systemctl list-unit-files watchtower_server.service >/dev/null 2>&1; then
-        start_step_message "Stopping Systemd Service"
         sudo systemctl disable --now watchtower_server.service
         sudo systemctl stop watchtower_server.service
         sudo rm -rf $DST_SERVER_SERVICE
         successful 
+    else
+        warning_message "watchtower_server.service not running... skipping"
     fi
 }
 
