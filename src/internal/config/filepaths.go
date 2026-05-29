@@ -52,4 +52,4 @@ func InitializeFilepaths(filepathsStruct Filepaths) {
 			)
 		}
 	}
-} 
+}

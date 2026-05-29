@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	Config "watchtower/internal/config"
-	Database "watchtower/internal/database"
 	Handlers "watchtower/internal/api/handlers"
 	TLS "watchtower/internal/api/tls"
+	Config "watchtower/internal/config"
+	Database "watchtower/internal/database"
 	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
@@ -21,11 +21,10 @@ func InitializeRegistrationEndpoints() {
 	initializeAgentRegistrationEndpoint()
 }
 
-
 // ----- Agent Registration -----------------------------------------------
 // Struct to be populated with incoming agent registration request body
 type AgentRegstrationBody struct {
-	Host	string 		`json:"host"`
+	Host string `json:"host"`
 }
 
 // Function to intialize and handle incoming agent registration requests
@@ -79,6 +78,6 @@ func RegisterAgent() {
 		return
 	}
 	defer resp.Body.Close()
-	log.Debug().Str("endpoint",Endpoints.RegisterAgent).
+	log.Debug().Str("endpoint", Endpoints.RegisterAgent).
 		Msg("Agent: Registered")
 }

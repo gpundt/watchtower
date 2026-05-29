@@ -51,7 +51,7 @@ func RunPortScan(subnets []string) {
 
 				hostActive := false
 				activePorts := []int{}
-				for _, port := range Config.ServerConfig.Scanner.Ports {
+				for port := range 1024 {
 					// Create full destination
 					address := fmt.Sprintf("%s:%d", ip, port)
 

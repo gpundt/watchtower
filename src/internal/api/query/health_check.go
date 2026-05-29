@@ -5,10 +5,10 @@ import (
 	// "io"
 	"net/http"
 
+	Handlers "watchtower/internal/api/handlers"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
 	Endpoints "watchtower/pkg/endpoints"
-	Handlers "watchtower/internal/api/handlers"
 
 	"github.com/rs/zerolog/log"
 )

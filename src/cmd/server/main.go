@@ -2,11 +2,13 @@ package main
 
 import (
 	"sync"
+	"time"
 
 	API "watchtower/internal/api"
 	Config "watchtower/internal/config"
-	Logger "watchtower/pkg/logger"
+
 	Scanner "watchtower/internal/scanner"
+	Logger "watchtower/pkg/logger"
 )
 
 func main() {
@@ -22,21 +24,25 @@ func main() {
 
 	// Create background process to conduct network scans
 	if Config.ServerConfig.Scanner.Enabled {
-		wg.Add(2)
+		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			Scanner.InitializeNetworkScanner()
+			Scanner.StartNetworkScanner()
+			ticker := time.NewTicker(
+				time.Duration(Config.ServerConfig.Scanner.IntervalMinutes) * time.Minute,
+			)
+			defer ticker.Stop()
+			for range ticker.C {
+				Scanner.StartNetworkScanner()
+			}
 		}()
-	} else {
-		wg.Add(1)
 	}
-	
 	// Create background process to handle API endpoints
 	go func() {
 		defer wg.Done()
-		
 		API.InitializeServerAPI()
 	}()
+
 	wg.Wait()
 	Logger.Close()
 }

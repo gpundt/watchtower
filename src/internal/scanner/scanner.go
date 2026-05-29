@@ -13,7 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func InitializeNetworkScanner() {
+func StartNetworkScanner() {
 	subnets, err := getHostIPSubnets()
 	if err != nil {
 		log.Err(err).Str("func", "getHostIPSubnets").Msg("")
@@ -21,10 +21,10 @@ func InitializeNetworkScanner() {
 	}
 	log.Info().Msg("Network Scanner: Initialized")
 
-	StartScanning(subnets)
+	Scan(subnets)
 }
 
-func StartScanning(subnets []string) {
+func Scan(subnets []string) {
 	ICMP.RunICMPScan(subnets)
 	ARP.RunARPScan()
 	Port.RunPortScan(subnets)

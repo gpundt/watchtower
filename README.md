@@ -33,7 +33,14 @@ This will:
 
 #### Docker
 
-- IN PROGRESS
+1) Deploy the stack via docker-compose: `docker-compose up -d`
+
+This will:
+- Start the Watchtower Database (TimescaleDB PostgreSQL)
+- Start the Watchtower Dashboard (Grafana)
+- Start the Watchtower Server (Busybox running the watchtower_server binary)
+
+2) View your running containers with: `docker ps -a`
 
 ### Agent
 
@@ -70,7 +77,10 @@ This will:
 
 #### Docker
 
-- IN PROGRESS
+1) Shutdown the stack with: `docker-compose down`
+    - *Can wipe database entries with: `docker-compose down -v`
+
+2) Confirm there are no running containers with: `docker ps -a`
 
 ### Agent
 
