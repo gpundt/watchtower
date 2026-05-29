@@ -48,7 +48,7 @@ func MakePostHandler[T any](callback func(T) error) http.HandlerFunc {
 			Str("method", r.Method).
 			Msg(fmt.Sprintf("%+v", outputStruct))
 
-		if err := callback(outputStruct); err == nil {
+		if err := callback(outputStruct); err != nil {
 			log.Err(err).Str("url", r.URL.Path).Msg("Callback failed")
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
