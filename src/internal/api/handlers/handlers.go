@@ -54,6 +54,9 @@ func MakePostHandler[T any](callback func(T) error) http.HandlerFunc {
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+		response := map[string]string{"message": "submission successfully received."}
+		json.NewEncoder(w).Encode(response)
 	}
 }

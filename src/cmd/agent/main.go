@@ -16,6 +16,7 @@ func main() {
 		&Config.AgentConfig,
 		Config.AgentPaths.ConfigFilepath,
 	)
+	Config.InitializeFilepaths(Config.AgentPaths)
 	Logger.InitializeAgentLogger()
 
 	// Initialize API

@@ -15,8 +15,8 @@ func main() {
 		&Config.ServerConfig,
 		Config.ServerPaths.ConfigFilepath,
 	)
+	Config.InitializeFilepaths(Config.ServerPaths)
 	Logger.InitializeServerLogger()
-
 
 	var wg sync.WaitGroup
 

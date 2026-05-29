@@ -1,5 +1,10 @@
 package config
 
+import (
+	"log"
+	"os"
+)
+
 type Filepaths struct {
 	EtcDirectory    string
 	ConfigFilepath  string
@@ -32,3 +37,19 @@ var ServerPaths = Filepaths{
 	LogDirectory:    "/var/log/watchtower/",
 	LogFilepath:     "",
 }
+
+func InitializeFilepaths(filepathsStruct Filepaths) {
+	files := []string{
+		filepathsStruct.LogDirectory,
+	}
+
+	for _, file := range files {
+		err := os.MkdirAll(file, 0755)
+		if err != nil {
+			log.Fatalf(
+				"Failed to 'os.MkdirAll(%s, 0755)",
+				file,
+			)
+		}
+	}
+} 
