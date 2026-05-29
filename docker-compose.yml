@@ -37,20 +37,19 @@ services:
       - db
   
   server:
-    image: busybox:1.38.0
+    build:
+      context: .
+      dockerfile: Dockerfile.server
     container_name: watchtower_server
     restart: unless-stopped
-    ports:
-      - "443:443"
     volumes:
       - ./config/server.yaml:/etc/watchtower/server.yaml
       - ./build/watchtower_server:/opt/watchtower/bin/watchtower_server
-      - ./certs/ca:/opt/watchtower/tls
-      - ./certs/server:/opt/watchtower/tls
+      - ./certs/ca:/opt/watchtower/tls/ca
+      - ./certs/server:/opt/watchtower/tls/server
       - ./src:/opt/watchtower/src
     command: ["/opt/watchtower/bin/watchtower_server"]
-    networks:
-      - watchtower_net
+    network_mode: "host"
     depends_on:
       - db
 

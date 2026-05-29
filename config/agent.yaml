@@ -4,6 +4,6 @@ agent:
   name: "test1"
   verbose: true
 tls:
-  ca_cert: "/opt/watchtower/tls/ca.crt"
-  agent_cert: "/opt/watchtower/tls/test_agent.crt"
-  agent_key: "/opt/watchtower/tls/test_agent.key"
+  ca_cert: "/opt/watchtower/tls/ca/ca.crt"
+  agent_cert: "/opt/watchtower/tls/agent/test_agent.crt"
+  agent_key: "/opt/watchtower/tls/agent/test_agent.key"

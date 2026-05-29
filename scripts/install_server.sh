@@ -14,13 +14,13 @@ DST_SERVER_CONFIG=$ETC_DIRECTORY/server.yaml
 SRC_SERVER_BINARY=../build/watchtower_server
 DST_SERVER_BINARY=$BINARY_DIRECTORY/watchtower_server
 SRC_CA_CERT=../certs/ca/ca.crt
-DST_CA_CERT=$TLS_DIRECTORY/ca.crt
+DST_CA_CERT=$TLS_DIRECTORY/ca/ca.crt
 SRC_CA_KEY=../certs/ca/ca.key
-DST_CA_KEY=$TLS_DIRECTORY/ca.key
+DST_CA_KEY=$TLS_DIRECTORY/ca/ca.key
 SRC_SERVER_CERT=../certs/server/server.crt
-DST_SERVER_CERT=$TLS_DIRECTORY/server.crt
+DST_SERVER_CERT=$TLS_DIRECTORY/server/server.crt
 SRC_SERVER_KEY=../certs/server/server.key
-DST_SERVER_KEY=$TLS_DIRECTORY/server.key
+DST_SERVER_KEY=$TLS_DIRECTORY/server/server.key
 SRC_SERVER_SERVICE=./watchtower_server.service
 DST_SERVER_SERVICE=/etc/systemd/system/watchtower_server.service
 
@@ -45,7 +45,8 @@ function prep_important_dirs() {
     _create_dir $ETC_DIRECTORY
     _create_dir $OPT_DIRECTORY
     _create_dir $BINARY_DIRECTORY
-    _create_dir $TLS_DIRECTORY
+    _create_dir $TLS_DIRECTORY/ca
+    _create_dir $TLS_DIRECTORY/server
     _create_dir $LOG_DIRECTORY
     successful
 }

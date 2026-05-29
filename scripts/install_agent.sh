@@ -22,11 +22,11 @@ DST_AGENT_CONFIG=$ETC_DIRECTORY/agent.yaml
 SRC_AGENT_BINARY=../build/watchtower_agent
 DST_AGENT_BINARY=$BINARY_DIRECTORY/watchtower_agent
 SRC_CA_CERT=../certs/ca/ca.crt
-DST_CA_CERT=$TLS_DIRECTORY/ca.crt
+DST_CA_CERT=$TLS_DIRECTORY/ca/ca.crt
 SRC_AGENT_CERT=../certs/agents/"$AGENT_HOSTNAME"_agent.crt
-DST_AGENT_CERT=$TLS_DIRECTORY/"$AGENT_HOSTNAME"_agent.crt
+DST_AGENT_CERT=$TLS_DIRECTORY/agent/"$AGENT_HOSTNAME"_agent.crt
 SRC_AGENT_KEY=../certs/agents/"$AGENT_HOSTNAME"_agent.key
-DST_AGENT_KEY=$TLS_DIRECTORY/"$AGENT_HOSTNAME"_agent.key
+DST_AGENT_KEY=$TLS_DIRECTORY/agent/"$AGENT_HOSTNAME"_agent.key
 SRC_AGENT_SERVICE=./watchtower_agent.service
 DST_AGENT_SERVICE=/etc/systemd/system/watchtower_agent.service
 
@@ -43,7 +43,8 @@ function prep_important_dirs() {
     _create_dir $ETC_DIRECTORY
     _create_dir $OPT_DIRECTORY
     _create_dir $BINARY_DIRECTORY
-    _create_dir $TLS_DIRECTORY
+    _create_dir $TLS_DIRECTORY/ca
+    _create_dir $TLS_DIRECTORY/agent
     _create_dir $LOG_DIRECTORY
     successful
 }

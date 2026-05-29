@@ -4,9 +4,9 @@ server:
   secret: "CHANGEME"
   verbose: true
 tls:
-  ca_cert: "/opt/watchtower/tls/ca.crt"
-  server_cert: "/opt/watchtower/tls/server.crt"
-  server_key: "/opt/watchtower/tls/server.key"
+  ca_cert: "/opt/watchtower/tls/ca/ca.crt"
+  server_cert: "/opt/watchtower/tls/server/server.crt"
+  server_key: "/opt/watchtower/tls/server/server.key"
 database:
   host: "localhost"
   port: 5432
