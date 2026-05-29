@@ -7,8 +7,9 @@ import (
 	"syscall"
 	"time"
 
-	Endpoints "watchtower/pkg/endpoints"
 	Handlers "watchtower/internal/api/handlers"
+	Config "watchtower/internal/config"
+	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -16,20 +17,21 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 )
 
-
 // ----- Server CPU Metrics ---------------------------------------------
 // Function to initialize server_cpu API endpoint
 func initializeServerCPUEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerCPU,
-		Handlers.MakeGetHandler(GenerateHostCPUJSON),
+		Handlers.MakeGetHandler(func() map[string]any {
+			return GenerateHostCPUJSON(Config.ServerConfig.Server.Host)
+		}),
 	)
 	log.Debug().Str("server_cpu", Endpoints.QueryServerCPU).
 		Msg("Server CPU Endpoint Initialized")
 }
 
 // Helper function to get server CPU information and format into HTTP response
-func GenerateHostCPUJSON() map[string]any {
+func GenerateHostCPUJSON(sourceHost string) map[string]any {
 	info, _ := cpu.Info()
 
 	logicalCores, _ := cpu.Counts(true)
@@ -37,6 +39,7 @@ func GenerateHostCPUJSON() map[string]any {
 	usedPercentage, _ := cpu.Percent(time.Second, false)
 
 	return map[string]any{
+		"host":                sourceHost,
 		"cpu_model":           info[0].Model,
 		"cpu_family":          info[0].Family,
 		"cpu_model_name":      info[0].ModelName,
@@ -53,17 +56,20 @@ func GenerateHostCPUJSON() map[string]any {
 func initializeServerMemoryEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerMemory,
-		Handlers.MakeGetHandler(GenerateHostMemoryJSON),
+		Handlers.MakeGetHandler(func() map[string]any {
+			return GenerateHostMemoryJSON(Config.ServerConfig.Server.Host)
+		}),
 	)
 	log.Debug().Str("server_memory", Endpoints.QueryServerMemory).
 		Msg("Server Memory Endpoint Initialized")
 }
 
 // Helper function to get server Memory information and format into HTTP response
-func GenerateHostMemoryJSON() map[string]any {
+func GenerateHostMemoryJSON(sourceHost string) map[string]any {
 	v, _ := mem.VirtualMemory()
 
 	return map[string]any{
+		"host":                   sourceHost,
 		"total_memory_bytes":     float64(v.Total),
 		"free_memory_bytes":      float64(v.Free),
 		"free_memory_percentage": float64(100 - v.UsedPercent),
@@ -77,14 +83,16 @@ func GenerateHostMemoryJSON() map[string]any {
 func initializeServerStorageEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerStorage,
-		Handlers.MakeGetHandler(GenerateHostStorageJSON),
+		Handlers.MakeGetHandler(func() map[string]any {
+			return GenerateHostStorageJSON(Config.ServerConfig.Server.Host)
+		}),
 	)
 	log.Debug().Str("server_storage", Endpoints.QueryServerStorage).
 		Msg("Server Storage Endpoint Initialized")
 }
 
 // Helper function to get server storage information and format into HTTP response
-func GenerateHostStorageJSON() map[string]any {
+func GenerateHostStorageJSON(sourceHost string) map[string]any {
 	var stat syscall.Statfs_t
 	if err := syscall.Statfs("/", &stat); err != nil {
 		log.Err(err).Msg("Failed to GenerateServerStorageJSON")
@@ -95,13 +103,14 @@ func GenerateHostStorageJSON() map[string]any {
 
 	// Free storage
 	freeStorageBytes := stat.Bfree * uint64(stat.Bsize)
-	freeStoragePercentage := (float64(freeStorageBytes)/float64(totalStorageBytes))*100
+	freeStoragePercentage := (float64(freeStorageBytes) / float64(totalStorageBytes)) * 100
 
 	// Used storage
 	usedStorageBytes := totalStorageBytes - freeStorageBytes
-	usedStoragePercentage := (float64(usedStorageBytes)/float64(totalStorageBytes))*100
+	usedStoragePercentage := (float64(usedStorageBytes) / float64(totalStorageBytes)) * 100
 
 	return map[string]any{
+		"host":                    sourceHost,
 		"total_storage_bytes":     totalStorageBytes,
 		"free_storage_bytes":      freeStorageBytes,
 		"free_storage_percentage": freeStoragePercentage,
@@ -109,7 +118,6 @@ func GenerateHostStorageJSON() map[string]any {
 		"used_storage_percentage": usedStoragePercentage,
 	}
 }
-
 
 // ----- Server Temperature Metrics -----------------------------------
 // Function to initialize server_temp API endpoint
@@ -121,7 +129,9 @@ func initializeServerTempEndpoint() {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		b, _ := json.MarshalIndent(GenerateHostTempJSON(), "", "  ")
+		b, _ := json.MarshalIndent(
+			GenerateHostTempJSON(Config.ServerConfig.Server.Host), "", "  ",
+		)
 		fmt.Fprintf(w, string(b))
 	})
 
@@ -130,20 +140,20 @@ func initializeServerTempEndpoint() {
 }
 
 type SensorData struct {
-	Sensor  string `json:"sensor"`
-	Celsius *float64    `json:"celsius"`
+	Sensor  string   `json:"sensor"`
+	Celsius *float64 `json:"celsius"`
 }
 
 type TemperatureResponse struct {
-	Host string `json:"host"`
+	Host string       `json:"host"`
 	Data []SensorData `json:"data"`
 }
 
 // Helper function to get server Temperature information and format into HTTP response
-func GenerateHostTempJSON() TemperatureResponse {
+func GenerateHostTempJSON(sourceHost string) TemperatureResponse {
 	// response := map[string]any{}
 	response := TemperatureResponse{
-		Host: "watchtower_server",
+		Host: sourceHost,
 		Data: []SensorData{},
 	}
 

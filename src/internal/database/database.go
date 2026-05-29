@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"time"
 
-	Config "watchtower/internal/config"
 	Query "watchtower/internal/api/query"
+	Config "watchtower/internal/config"
 
 	// "github.com/rs/zerolog/log"
-	_ "github.com/lib/pq"	// PostgreSQL Driver
+	_ "github.com/lib/pq" // PostgreSQL Driver
 )
 
 // Constant strings for database connection
 const (
-	CPUUsageTable = "host_cpu_usage"
-	MemoryUsageTable = "host_memory_usage"
+	CPUUsageTable     = "host_cpu_usage"
+	MemoryUsageTable  = "host_memory_usage"
 	StorageUsageTable = "host_storage_usage"
-	TemperatureTable = "host_temperature"
-	AgentsTable = "agents"
+	TemperatureTable  = "host_temperature"
+	AgentsTable       = "agents"
 )
 
 // Helper function to build the connection string fresh each call
@@ -47,7 +47,7 @@ func InsertHostCPUUsage(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (timestamp, host, cpu_used_percentage) VALUES ($1, $2, $3)`,
+		`INSERT INTO %s (time, hostname, cpu_used_percentage) VALUES ($1, $2, $3)`,
 		CPUUsageTable,
 	)
 
@@ -80,7 +80,7 @@ func InsertHostMemoryUsage(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (timestamp, host, total_memory_bytes, free_memory_bytes, used_memory_bytes, free_memory_percent, used_memory_percent) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		`INSERT INTO %s (time, hostname, total_memory_bytes, free_memory_bytes, used_memory_bytes, free_memory_percent, used_memory_percent) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
 		MemoryUsageTable,
 	)
 
@@ -117,7 +117,7 @@ func InsertHostStorageUsage(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (timestamp, host, total_storage_bytes, free_storage_bytes, used_storage_bytes, free_storage_percent, used_storage_percent) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		`INSERT INTO %s (time, hostname, total_storage_bytes, free_storage_bytes, used_storage_bytes, free_storage_percent, used_storage_percent) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
 		StorageUsageTable,
 	)
 
@@ -150,7 +150,7 @@ func InsertHostTemperature(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (timestamp, host, sensor_name, temp_celsius) VALUES ($1, $2, $3, $4)`,
+		`INSERT INTO %s (time, hostname, sensor_name, temp_celsius) VALUES ($1, $2, $3, $4)`,
 		TemperatureTable,
 	)
 
@@ -179,7 +179,7 @@ func InsertAgentRegistration(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (host) VALUES ($1)`,
+		`INSERT INTO %s (hostname) VALUES ($1)`,
 		AgentsTable,
 	)
 

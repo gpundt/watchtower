@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"time"
 	"net/http"
+	"time"
 
-	Database "watchtower/internal/database"
 	Handlers "watchtower/internal/api/handlers"
 	Query "watchtower/internal/api/query"
 	TLS "watchtower/internal/api/tls"
 	Config "watchtower/internal/config"
+	Database "watchtower/internal/database"
 	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
@@ -62,7 +62,7 @@ func submitHostMetrics[T MetricsStructConstraint](
 // ----- Host CPU Metrics ------------------------------------------------
 // Struct to be populated with incoming host CPU metrics submission
 type HostCPUBody struct {
-	Host	   	   string  `json:"host"`
+	Host           string  `json:"host"`
 	Model          string  `json:"cpu_model"`
 	Family         string  `json:"cpu_family"`
 	ModelName      string  `json:"cpu_model_name"`
@@ -97,7 +97,7 @@ func initializeHostCPUSubmissionEndpoint() {
 // ----- Host Memory Metrics ----------------------------------------------
 // Struct to be populated with Incoming host memory metrics submission
 type HostMemoryBody struct {
-	Host				 string	 `json:"host"`
+	Host                 string  `json:"host"`
 	TotalMemoryBytes     float64 `json:"total_memory_bytes"`
 	FreeMemoryBytes      float64 `json:"free_memory_bytes"`
 	FreeMemoryPercentage float64 `json:"free_memory_percentage"`
@@ -131,11 +131,10 @@ func initializeHostMemorySubmissionEndpoint() {
 		Msg("Host Memory Submission Endpoint: Initialized")
 }
 
-
 // ----- Host Storage Metrics ---------------------------------------------
 // Struct to be populated with Incoming host storage metrics submission
 type HostStorageBody struct {
-	Host				  string  `json:"host"`
+	Host                  string  `json:"host"`
 	TotalStorageBytes     uint64  `json:"total_storage_bytes"`
 	FreeStorageBytes      uint64  `json:"free_storage_bytes"`
 	FreeStoragePercentage float64 `json:"free_storage_percentage"`
@@ -172,7 +171,7 @@ func initializeHostStorageSubmissionEndpoint() {
 // ----- Host Temperature Metrics------------------------------------------
 // Struct to be populated with Incoming host Temperature metrics submission
 type HostTempBody struct {
-	Host string 		  `json:"host"`
+	Host string             `json:"host"`
 	Data []Query.SensorData `json:"data"`
 }
 

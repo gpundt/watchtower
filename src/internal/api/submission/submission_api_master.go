@@ -2,6 +2,7 @@ package submission
 
 import (
 	Query "watchtower/internal/api/query"
+	Config "watchtower/internal/config"
 	Endpoints "watchtower/pkg/endpoints"
 
 	"github.com/rs/zerolog/log"
@@ -11,19 +12,27 @@ import (
 func SubmitAllHostMetrics() {
 	submitHostMetrics(
 		Endpoints.SubmitHostCPU,
-		Query.GenerateHostCPUJSON(),
+		Query.GenerateHostCPUJSON(
+			Config.AgentConfig.Agent.Name,
+		),
 	)
 	submitHostMetrics(
 		Endpoints.SubmitHostMemory,
-		Query.GenerateHostMemoryJSON(),
+		Query.GenerateHostMemoryJSON(
+			Config.AgentConfig.Agent.Name,
+		),
 	)
 	submitHostMetrics(
 		Endpoints.SubmitHostStorage,
-		Query.GenerateHostStorageJSON(),
+		Query.GenerateHostStorageJSON(
+			Config.AgentConfig.Agent.Name,
+		),
 	)
 	submitHostMetrics(
 		Endpoints.SubmitHostTemp,
-		Query.GenerateHostTempJSON(),
+		Query.GenerateHostTempJSON(
+			Config.AgentConfig.Agent.Name,
+		),
 	)
 	log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).
 		Msg("Host Metrics: Submitted")
