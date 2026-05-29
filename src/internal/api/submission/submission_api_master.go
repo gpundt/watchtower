@@ -40,6 +40,7 @@ func SubmitAllHostMetrics() {
 
 // Initializes Server-side endpoints to receive host metrics
 func InitializeSubmissionEndpoints() {
+	initializeHostCheckInSubmissionEndpoint()
 	initializeHostCPUSubmissionEndpoint()
 	initializeHostMemorySubmissionEndpoint()
 	initializeHostStorageSubmissionEndpoint()

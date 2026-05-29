@@ -9,7 +9,7 @@ import (
 	Config "watchtower/internal/config"
 
 	// "github.com/rs/zerolog/log"
-	_ "github.com/lib/pq" // PostgreSQL Driver
+	"github.com/lib/pq" // PostgreSQL Driver
 )
 
 // Constant strings for database connection
@@ -19,6 +19,7 @@ const (
 	StorageUsageTable = "host_storage_usage"
 	TemperatureTable  = "host_temperature"
 	AgentsTable       = "agents"
+	PortScanTable     = "port_scan"
 )
 
 // Helper function to build the connection string fresh each call
@@ -169,8 +170,9 @@ func InsertHostTemperature(
 	return nil
 }
 
-func InsertAgentRegistration(
+func InsertAgent(
 	host string,
+	timestamp time.Time,
 ) error {
 	db, err := sql.Open("postgres", dbConnectionString())
 	if err != nil {
@@ -179,13 +181,67 @@ func InsertAgentRegistration(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (hostname) VALUES ($1)`,
+		`INSERT INTO %s (hostname, created_at, updated_at) VALUES ($1, $2, $3) ON CONFLICT (hostname) DO UPDATE SET updated_at = $3`,
 		AgentsTable,
+	)
+	_, execErr := db.Exec(
+		sqlStatement,
+		host,
+		timestamp,
+		timestamp,
+	)
+	if execErr != nil {
+		return execErr
+	}
+	return nil
+}
+
+// Function to update a row in the agent table, triggered by HostCheckIn
+func UpdateAgent(
+	host string,
+	timestamp time.Time,
+) error {
+	db, err := sql.Open("postgres", dbConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	sqlStatement := fmt.Sprintf(
+		"UPDATE %s SET updated_at = $1 WHERE hostname = $2",
+		AgentsTable, 
+	)
+	_, execErr := db.Exec(
+		sqlStatement,
+		timestamp,
+		host,
+	)
+	if execErr != nil {
+		return execErr
+	}
+	return nil
+}
+
+func InsertPortScan(
+	host string,
+	openPorts []int,
+) error {
+	db, err := sql.Open("postgres", dbConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	sqlStatement := fmt.Sprintf(
+		`INSERT INTO %s (hostname, open_ports, last_scan) VALUES ($1, $2, $3)`,
+		PortScanTable,
 	)
 
 	_, err = db.Exec(
 		sqlStatement,
 		host,
+		pq.Array(openPorts),
+		time.Now(),
 	)
 	if err != nil {
 		return err

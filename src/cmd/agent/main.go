@@ -4,7 +4,7 @@ import (
 	"time"
 
 	API "watchtower/internal/api"
-	Query "watchtower/internal/api/query"
+	Registration "watchtower/internal/api/registration"
 	Submission "watchtower/internal/api/submission"
 	Config "watchtower/internal/config"
 	Logger "watchtower/pkg/logger"
@@ -21,6 +21,7 @@ func main() {
 
 	// Initialize API
 	API.InitializeAgentAPI()
+	Registration.RegisterAgent()
 
 	// Create timer
 	ticker := time.NewTicker(
@@ -30,7 +31,7 @@ func main() {
 
 	// Every Config.AgentConfig.Agent.PushIntervalSeconds
 	for range ticker.C {
-		Query.QueryHealthCheckEndpoint()
+		Submission.SubmitHostCheckIn()
 		Submission.SubmitAllHostMetrics()
 	}
 

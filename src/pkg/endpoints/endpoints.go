@@ -16,9 +16,9 @@ const (
 	
 	// Registrations
 	RegisterAgent = RegistrationEndpoint + "/agent"
-	RegisterUser = RegistrationEndpoint + "/user"
 
 	// Submissions
+	SubmitHostCheckIn = SubmissionEndpoint + "/host_check_in"
 	SubmitHostCPU     = SubmissionEndpoint + "/host_cpu"
 	SubmitHostMemory  = SubmissionEndpoint + "/host_memory"
 	SubmitHostStorage = SubmissionEndpoint + "/host_storage"

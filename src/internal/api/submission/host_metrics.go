@@ -31,7 +31,7 @@ func submitHostMetrics[T MetricsStructConstraint](
 	jsonData, err := json.MarshalIndent(metricsStruct, "", "  ")
 	if err != nil {
 		log.Err(err).Msg(fmt.Sprintf(
-			"Failed to marshal metricsStrict: %+v",
+			"Failed to marshal metricsStruct: %+v",
 			metricsStruct,
 		))
 		return
