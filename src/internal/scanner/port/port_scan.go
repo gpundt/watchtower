@@ -9,6 +9,7 @@ import (
 	"time"
 
 	Config "watchtower/internal/config"
+	Database "watchtower/internal/database"
 
 	"github.com/rs/zerolog/log"
 )
@@ -70,6 +71,7 @@ func RunPortScan(subnets []string) {
 					scanResults.ActiveHosts[ip] = activePorts
 					log.Info().Str("ip", ip).
 						Msg(fmt.Sprintf("Open Ports: %v", activePorts))
+					Database.InsertPortScan(ip, activePorts, time.Now())
 				} else {
 					if !slices.Contains(scanResults.InactiveHosts, ip) {
 						scanResults.InactiveHosts = append(

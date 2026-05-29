@@ -74,3 +74,10 @@ CREATE TABLE IF NOT EXISTS agents (
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Host Port Scan Table ---------------------------------
+CREATE TABLE IF NOT EXISTS port_scan (
+    hostname    TEXT        PRIMARY KEY,
+    open_ports INTEGER[] DEFAULT '{}'::INTEGER[],
+    last_scan_timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+)

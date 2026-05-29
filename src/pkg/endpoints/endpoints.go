@@ -23,4 +23,5 @@ const (
 	SubmitHostMemory  = SubmissionEndpoint + "/host_memory"
 	SubmitHostStorage = SubmissionEndpoint + "/host_storage"
 	SubmitHostTemp    = SubmissionEndpoint + "/host_temp"
+	SubmitHostPortScan = SubmissionEndpoint + "/port_scan_results"
 )

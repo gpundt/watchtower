@@ -208,7 +208,7 @@ func UpdateAgent(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		"UPDATE %s SET updated_at = $1 WHERE hostname = $2",
+		`UPDATE %s SET updated_at = $1 WHERE hostname = $2`,
 		AgentsTable, 
 	)
 	_, execErr := db.Exec(
@@ -225,6 +225,7 @@ func UpdateAgent(
 func InsertPortScan(
 	host string,
 	openPorts []int,
+	timestamp time.Time,
 ) error {
 	db, err := sql.Open("postgres", dbConnectionString())
 	if err != nil {
@@ -233,18 +234,18 @@ func InsertPortScan(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (hostname, open_ports, last_scan) VALUES ($1, $2, $3)`,
+		`INSERT INTO %s (hostname, open_ports, last_scan_timestamp) VALUES ($1, $2, $3) ON CONFLICT (hostname) DO UPDATE SET open_ports = $2, last_scan_timestamp = $3`,
 		PortScanTable,
 	)
 
-	_, err = db.Exec(
+	_, execErr := db.Exec(
 		sqlStatement,
 		host,
 		pq.Array(openPorts),
-		time.Now(),
+		timestamp,
 	)
-	if err != nil {
-		return err
+	if execErr != nil {
+		return execErr
 	}
 
 	return nil

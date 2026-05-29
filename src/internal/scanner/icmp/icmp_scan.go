@@ -6,6 +6,7 @@ import (
 	"time"
 
 	Config "watchtower/internal/config"
+	Database "watchtower/internal/database"
 
 	probing "github.com/prometheus-community/pro-bing"
 	"github.com/rs/zerolog/log"
@@ -77,6 +78,7 @@ func RunICMPScan(subnets []string) {
 						scanResults.ActiveHosts,
 						ip,
 					)
+					Database.InsertPortScan(ip, nil, time.Now())
 				}
 			}(addr.String())
 		}
