@@ -22,7 +22,6 @@ function prepare_certs_directory() {
     start_step_message "Preparing Certificate Output Directory '${CERTS_DIR}'"
     mkdir -p "${CERTS_ROOT_DIR}/ca"
     mkdir -p "${CERTS_ROOT_DIR}/server"
-    mkdir -p "${CERTS_ROOT_DIR}/agents"
     successful
 }
 

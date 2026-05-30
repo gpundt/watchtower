@@ -50,6 +50,20 @@ services:
     network_mode: "host"
     depends_on:
       - db
+  
+  agent:
+    image: busybox:1.38.0
+    container_name: watchtower_agent
+    restart: unless-stopped
+    volumes:
+      - ./config/agent.yaml:/etc/watchtower/agent.yaml
+      - ./build/watchtower_agent:/opt/watchtower/bin/watchtower_agent
+      - ./certs/ca/ca.crt:/opt/watchtower/tls/ca/ca.crt
+      - ./certs/${AGENT_HOSTNAME}_agent:/opt/watchtower/tls/${AGENT_HOSTNAME}_agent
+    command: ["/opt/watchtower/bin/watchtower_agent"]
+    network_mode: "host"
+    depends_on:
+      - server
 
 volumes:
   watchtower_db_volume:

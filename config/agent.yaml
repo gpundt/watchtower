@@ -5,5 +5,5 @@ agent:
   verbose: true
 tls:
   ca_cert: "/opt/watchtower/tls/ca/ca.crt"
-  agent_cert: "/opt/watchtower/tls/agent/test_agent.crt"
-  agent_key: "/opt/watchtower/tls/agent/test_agent.key"
+  agent_cert: "/opt/watchtower/tls/server_agent/agent.crt"
+  agent_key: "/opt/watchtower/tls/server_agent/agent.key"
