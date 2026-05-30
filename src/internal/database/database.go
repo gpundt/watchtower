@@ -39,7 +39,8 @@ func dbConnectionString() string {
 func InsertHostCPUUsage(
 	timestamp time.Time,
 	host string,
-	used_percentage float64,
+	totalCores int,
+	corePercentages []float64,
 ) error {
 	db, err := sql.Open("postgres", dbConnectionString())
 	if err != nil {
@@ -48,7 +49,7 @@ func InsertHostCPUUsage(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (time, hostname, cpu_used_percentage) VALUES ($1, $2, $3)`,
+		`INSERT INTO %s (time, hostname, total_cores, core_percentages) VALUES ($1, $2, $3, $4)`,
 		CPUUsageTable,
 	)
 
@@ -56,7 +57,8 @@ func InsertHostCPUUsage(
 		sqlStatement,
 		timestamp,
 		host,
-		used_percentage,
+		totalCores,
+		corePercentages,
 	)
 	if err != nil {
 		return err
@@ -209,7 +211,7 @@ func UpdateAgent(
 
 	sqlStatement := fmt.Sprintf(
 		`UPDATE %s SET updated_at = $1 WHERE hostname = $2`,
-		AgentsTable, 
+		AgentsTable,
 	)
 	_, execErr := db.Exec(
 		sqlStatement,

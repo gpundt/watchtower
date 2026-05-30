@@ -32,23 +32,19 @@ func initializeServerCPUEndpoint() {
 
 // Helper function to get server CPU information and format into HTTP response
 func GenerateHostCPUJSON(sourceHost string) map[string]any {
-	info, _ := cpu.Info()
-
-	logicalCores, _ := cpu.Counts(true)
-	physicalCores, _ := cpu.Counts(false)
-	usedPercentage, _ := cpu.Percent(time.Second, false)
-
-	return map[string]any{
-		"host":                sourceHost,
-		"cpu_model":           info[0].Model,
-		"cpu_family":          info[0].Family,
-		"cpu_model_name":      info[0].ModelName,
-		"cpu_mhz":             info[0].Mhz / 1000,
-		"cpu_cache_size":      info[0].CacheSize,
-		"cpu_logical_cores":   logicalCores,
-		"cpu_physical_cores":  physicalCores,
-		"cpu_used_percentage": usedPercentage[0] * 100,
+	percentages, err := cpu.Percent(1*time.Second, true)
+	if err != nil {
+		log.Err(err).Str("func", "GenerateHostCPUJSON").Msg("")
+		return nil
 	}
+
+	jsonData := map[string]any{
+		"host":             sourceHost,
+		"total_cores":      len(percentages),
+		"core_percentages": percentages,
+	}
+
+	return jsonData
 }
 
 // ----- Server Memory Metrics ------------------------------------------
@@ -140,8 +136,8 @@ func initializeServerTempEndpoint() {
 }
 
 type SensorData struct {
-	Sensor  string   `json:"sensor"`
-	Celsius *float64 `json:"celsius"`
+	Sensor  string  `json:"sensor"`
+	Celsius float64 `json:"celsius"`
 }
 
 type TemperatureResponse struct {
@@ -162,7 +158,7 @@ func GenerateHostTempJSON(sourceHost string) TemperatureResponse {
 		//log.Error().Str("server_temp", "Unavailable").Msg("Failed to get host.SensorsTemperatures()")
 		newSensorData := SensorData{
 			Sensor:  "Temperature Not Available",
-			Celsius: nil,
+			Celsius: 0.0,
 		}
 		response.Data = append(response.Data, newSensorData)
 	}
@@ -172,7 +168,7 @@ func GenerateHostTempJSON(sourceHost string) TemperatureResponse {
 		temp := t.Temperature
 		newSensorData := SensorData{
 			Sensor:  sensor,
-			Celsius: &temp,
+			Celsius: temp,
 		}
 		response.Data = append(response.Data, newSensorData)
 	}

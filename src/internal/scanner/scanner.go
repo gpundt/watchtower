@@ -19,7 +19,7 @@ func StartNetworkScanner() {
 		log.Err(err).Str("func", "getHostIPSubnets").Msg("")
 		return
 	}
-	log.Info().Msg("Network Scanner: Initialized")
+	log.Debug().Msg("Network Scanner: Initialized")
 
 	Scan(subnets)
 }

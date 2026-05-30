@@ -62,15 +62,9 @@ func submitHostMetrics[T MetricsStructConstraint](
 // ----- Host CPU Metrics ------------------------------------------------
 // Struct to be populated with incoming host CPU metrics submission
 type HostCPUBody struct {
-	Host           string  `json:"host"`
-	Model          string  `json:"cpu_model"`
-	Family         string  `json:"cpu_family"`
-	ModelName      string  `json:"cpu_model_name"`
-	Mhz            float64 `json:"cpu_mhz"`
-	CacheSize      int32   `json:"cpu_cache_size"`
-	LogicalCores   int     `json:"cpu_logical_cores"`
-	PhysicalCores  int     `json:"cpu_physical_cores"`
-	UsedPercentage float64 `json:"cpu_used_percentage"`
+	Host            string    `json:"host"`
+	TotalCores      int       `json:"total_cores"`
+	CorePercentages []float64 `json:"core_percentages"`
 }
 
 // Initializes server-side endpoint to receive CPU metrics
@@ -81,7 +75,8 @@ func initializeHostCPUSubmissionEndpoint() {
 			err := Database.InsertHostCPUUsage(
 				time.Now(),
 				body.Host,
-				body.UsedPercentage,
+				body.TotalCores,
+				body.CorePercentages,
 			)
 			if err != nil {
 				log.Err(err).Str("endpoint", Endpoints.SubmitHostCPU).Msg("")

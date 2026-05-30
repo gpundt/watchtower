@@ -4,7 +4,8 @@ CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 CREATE TABLE IF NOT EXISTS host_cpu_usage (
     time           TIMESTAMPTZ         NOT NULL,
     hostname                TEXT                NOT NULL,
-    cpu_used_percentage DOUBLE PRECISION
+    total_cores         INTEGER,
+    core_percentages DOUBLE PRECISION[] DEFAULT '{}'::DOUBLE PRECISION[]
 );
 SELECT create_hypertable('host_cpu_usage', 'time', if_not_exists => TRUE);
 
