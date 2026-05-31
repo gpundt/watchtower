@@ -14,7 +14,7 @@ import (
 )
 
 // ----- Server Health Check --------------------------------------------
-func initializeHealthCheckAPIEndpoint() {
+func InitializeHealthCheckAPIEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryHealthCheck,
 		Handlers.MakeGetHandler(generateHealthCheckResponse),
@@ -33,18 +33,15 @@ func generateHealthCheckResponse() map[string]any {
 	}
 }
 
-func QueryHealthCheckEndpoint() {
+// Function to contact the server's health_check endpoint
+func QueryHealthCheckEndpoint() error{
 	resp, err := TLS.AgentTLSClient.Get(fmt.Sprintf(
 		"%s%s",
 		Config.AgentConfig.Agent.ServerURL,
 		Endpoints.QueryHealthCheck,
 	))
 	if err != nil {
-		log.Err(err).Msg(fmt.Sprintf(
-			"%s unavailable",
-			Endpoints.QueryHealthCheck,
-		))
-		return
+		return err
 	}
 
 	defer resp.Body.Close()
@@ -54,13 +51,7 @@ func QueryHealthCheckEndpoint() {
 			"Request failed with status: %d",
 			resp.StatusCode,
 		)
-		log.Err(err)
+		return err
 	}
-
-	// body, err := io.ReadAll(resp.Body)
-	// if err != nil {
-	// 	log.Err(err)
-	// }
-	// log.Debug().Str("health_check", Endpoints.QueryHealthCheck).
-	//     Msg(string(body))
+	return nil
 }

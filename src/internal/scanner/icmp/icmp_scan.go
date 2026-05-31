@@ -8,7 +8,7 @@ import (
 	Config "watchtower/internal/config"
 	Database "watchtower/internal/database"
 
-	probing "github.com/prometheus-community/pro-bing"
+	Probing "github.com/prometheus-community/pro-bing"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,6 +17,7 @@ type ICMPScanResults struct {
 	InactiveHosts []string
 }
 
+// Function to run ICMP scan on every /24 subnet he server is on
 func RunICMPScan(subnets []string) {
 	log.Info().Msg("Beginning ICMP Scan")
 
@@ -48,7 +49,7 @@ func RunICMPScan(subnets []string) {
 				defer func() { <-guard }() // Release the slot in the semphore
 
 				// Create object to ping hosts
-				pinger, err := probing.NewPinger(ip)
+				pinger, err := Probing.NewPinger(ip)
 				if err != nil {
 					log.Err(err).Str("ip", ip).Msg("")
 					scanResults.InactiveHosts = append(

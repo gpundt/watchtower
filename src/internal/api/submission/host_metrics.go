@@ -23,7 +23,7 @@ type MetricsStructConstraint interface {
 }
 
 // Agent-side function to submit gathered host metrics
-func submitHostMetrics[T MetricsStructConstraint](
+func SubmitHostMetrics[T MetricsStructConstraint](
 	endpoint string,
 	metricsStruct T,
 ) {
@@ -68,7 +68,7 @@ type HostCPUBody struct {
 }
 
 // Initializes server-side endpoint to receive CPU metrics
-func initializeHostCPUSubmissionEndpoint() {
+func InitializeHostCPUSubmissionEndpoint() {
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostCPU),
 		Handlers.MakePostHandler[HostCPUBody](func(body HostCPUBody) error {
@@ -101,7 +101,7 @@ type HostMemoryBody struct {
 }
 
 // Initializes server-side endpoint to receive memory metrics
-func initializeHostMemorySubmissionEndpoint() {
+func InitializeHostMemorySubmissionEndpoint() {
 
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostMemory),
@@ -138,7 +138,7 @@ type HostStorageBody struct {
 }
 
 // Initializes server-side endpoint to receive storage metrics
-func initializeHostStorageSubmissionEndpoint() {
+func InitializeHostStorageSubmissionEndpoint() {
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostStorage),
 		Handlers.MakePostHandler[HostStorageBody](func(body HostStorageBody) error {
@@ -171,7 +171,7 @@ type HostTempBody struct {
 }
 
 // Initializes server-side endpoint to receive temperature metrics
-func initializeHostTempSubmissionEndpoint() {
+func InitializeHostTempSubmissionEndpoint() {
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostTemp),
 		Handlers.MakePostHandler[HostTempBody](func(body HostTempBody) error {

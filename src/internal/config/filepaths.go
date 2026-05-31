@@ -38,6 +38,7 @@ var ServerPaths = Filepaths{
 	LogFilepath:     "",
 }
 
+// Function to ensure important filepaths exist
 func InitializeFilepaths(filepathsStruct Filepaths) {
 	files := []string{
 		filepathsStruct.LogDirectory,

@@ -8,7 +8,7 @@ import (
 	Query "watchtower/internal/api/query"
 	Config "watchtower/internal/config"
 
-	// "github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 	"github.com/lib/pq" // PostgreSQL Driver
 )
 
@@ -53,15 +53,16 @@ func InsertHostCPUUsage(
 		CPUUsageTable,
 	)
 
-	_, err = db.Exec(
+	_, execErr := db.Exec(
 		sqlStatement,
 		timestamp,
 		host,
 		totalCores,
 		corePercentages,
 	)
-	if err != nil {
-		return err
+	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.InsertHostCPUUsage").Msg("")
+		return execErr
 	}
 	return nil
 }
@@ -87,7 +88,7 @@ func InsertHostMemoryUsage(
 		MemoryUsageTable,
 	)
 
-	_, err = db.Exec(
+	_, execErr := db.Exec(
 		sqlStatement,
 		timestamp,
 		host,
@@ -97,8 +98,9 @@ func InsertHostMemoryUsage(
 		free_percentage,
 		used_percentage,
 	)
-	if err != nil {
-		return err
+	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.InsertHostMemoryUsage").Msg("")
+		return execErr
 	}
 	return nil
 }
@@ -124,7 +126,7 @@ func InsertHostStorageUsage(
 		StorageUsageTable,
 	)
 
-	_, err = db.Exec(
+	_, execErr := db.Exec(
 		sqlStatement,
 		timestamp,
 		host,
@@ -134,8 +136,9 @@ func InsertHostStorageUsage(
 		free_percentage,
 		used_percentage,
 	)
-	if err != nil {
-		return err
+	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.InsertHostStorageUsage").Msg("")
+		return execErr
 	}
 	return nil
 }
@@ -158,20 +161,22 @@ func InsertHostTemperature(
 	)
 
 	for _, sensorStruct := range tempData {
-		_, err = db.Exec(
+		_, execErr := db.Exec(
 			sqlStatement,
 			timestamp,
 			host,
 			sensorStruct.Sensor,
 			sensorStruct.Celsius,
 		)
-		if err != nil {
-			return err
+		if execErr != nil {
+			log.Err(execErr).Str("func", "Database.InsertHostTemperature").Msg("")
+			return execErr
 		}
 	}
 	return nil
 }
 
+// Function to insert or update an agent into the agents db
 func InsertAgent(
 	host string,
 	timestamp time.Time,
@@ -193,6 +198,7 @@ func InsertAgent(
 		timestamp,
 	)
 	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.InsertAgent").Msg("")
 		return execErr
 	}
 	return nil
@@ -219,11 +225,13 @@ func UpdateAgent(
 		host,
 	)
 	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.UpdateAgent").Msg("")
 		return execErr
 	}
 	return nil
 }
 
+// Function to insert individual port scan results into psql db
 func InsertPortScan(
 	host string,
 	openPorts []int,
@@ -247,6 +255,7 @@ func InsertPortScan(
 		timestamp,
 	)
 	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.InsertPortScan").Msg("")
 		return execErr
 	}
 

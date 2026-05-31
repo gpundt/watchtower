@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// Initialize Configs and loggng
+	// Initialize Configs, filepaths, and loggng
 	Config.InitializeConfigWrapper(
 		&Config.ServerConfig,
 		Config.ServerPaths.ConfigFilepath,
@@ -20,8 +20,8 @@ func main() {
 	Config.InitializeFilepaths(Config.ServerPaths)
 	Logger.InitializeServerLogger()
 
+	
 	var wg sync.WaitGroup
-
 	// Create background process to conduct network scans
 	if Config.ServerConfig.Scanner.Enabled {
 		wg.Add(1)

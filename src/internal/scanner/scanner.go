@@ -13,6 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// Function to run network scan on all subnets the server is connected to
 func StartNetworkScanner() {
 	subnets, err := getHostIPSubnets()
 	if err != nil {
@@ -21,15 +22,12 @@ func StartNetworkScanner() {
 	}
 	log.Debug().Msg("Network Scanner: Initialized")
 
-	Scan(subnets)
-}
-
-func Scan(subnets []string) {
 	ICMP.RunICMPScan(subnets)
 	ARP.RunARPScan()
 	Port.RunPortScan(subnets)
 }
 
+// Function to get and return all subnets the server is connected to 
 func getHostIPSubnets() ([]string, error) {
 	subnets := []string{}
 

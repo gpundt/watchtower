@@ -55,7 +55,7 @@ func SubmitHostCheckIn() {
 		Msg("Agent: Registered")
 }
 
-func initializeHostCheckInSubmissionEndpoint() {
+func InitializeHostCheckInSubmissionEndpoint() {
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitHostCheckIn),
 		Handlers.MakePostHandler[HostCheckInBody](func(body HostCheckInBody) error {

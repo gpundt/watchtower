@@ -19,7 +19,7 @@ import (
 
 // ----- Server CPU Metrics ---------------------------------------------
 // Function to initialize server_cpu API endpoint
-func initializeServerCPUEndpoint() {
+func InitializeServerCPUEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerCPU,
 		Handlers.MakeGetHandler(func() map[string]any {
@@ -49,7 +49,7 @@ func GenerateHostCPUJSON(sourceHost string) map[string]any {
 
 // ----- Server Memory Metrics ------------------------------------------
 // Function to initialize server_memory API endpoint
-func initializeServerMemoryEndpoint() {
+func InitializeServerMemoryEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerMemory,
 		Handlers.MakeGetHandler(func() map[string]any {
@@ -76,7 +76,7 @@ func GenerateHostMemoryJSON(sourceHost string) map[string]any {
 
 // ----- Server Storage Metrics ----------------------------------------
 // Function to initialize server_storage API endpoint
-func initializeServerStorageEndpoint() {
+func InitializeServerStorageEndpoint() {
 	http.HandleFunc(
 		Endpoints.QueryServerStorage,
 		Handlers.MakeGetHandler(func() map[string]any {
@@ -117,7 +117,7 @@ func GenerateHostStorageJSON(sourceHost string) map[string]any {
 
 // ----- Server Temperature Metrics -----------------------------------
 // Function to initialize server_temp API endpoint
-func initializeServerTempEndpoint() {
+func InitializeServerTempEndpoint() {
 	http.HandleFunc(Endpoints.QueryServerTemp, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

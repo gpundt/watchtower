@@ -10,9 +10,22 @@ import (
 )
 
 func InitializeServerAPI() {
-	Query.InitializeQueryEndpoints()
-	Submission.InitializeSubmissionEndpoints()
-	Registration.InitializeRegistrationEndpoints()
+	// Initialize individual query endpoints
+	Query.InitializeHealthCheckAPIEndpoint()
+	Query.InitializeServerCPUEndpoint()
+	Query.InitializeServerStorageEndpoint()
+	Query.InitializeServerMemoryEndpoint()
+	Query.InitializeServerTempEndpoint()
+
+	// Initialize individual submission endpoints
+	Submission.InitializeHostCheckInSubmissionEndpoint()
+	Submission.InitializeHostCPUSubmissionEndpoint()
+	Submission.InitializeHostMemorySubmissionEndpoint()
+	Submission.InitializeHostStorageSubmissionEndpoint()
+	Submission.InitializeHostTempSubmissionEndpoint()
+
+	// Initialize individual registraion endpoints
+	Registration.InitializeAgentRegistrationEndpoint()
 
 	TLS.InitializeServermTLS()
 
@@ -21,5 +34,7 @@ func InitializeServerAPI() {
 
 func InitializeAgentAPI() {
 	TLS.InitializeAgentmTLS()
-	Query.QueryHealthCheckEndpoint()
+	if err := Query.QueryHealthCheckEndpoint(); err != nil {
+		log.Fatal().Err(err).Str("func", "Query.QueryHealthCheckEndpoint").Msg("")
+	}
 }
