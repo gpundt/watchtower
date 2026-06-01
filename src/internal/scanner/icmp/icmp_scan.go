@@ -18,7 +18,7 @@ type ICMPScanResults struct {
 }
 
 // Function to run ICMP scan on every /24 subnet he server is on
-func RunICMPScan(subnets []string) {
+func RunICMPScan(subnets map[string]string) {
 	log.Info().Msg("Beginning ICMP Scan")
 
 	scanResults := ICMPScanResults{

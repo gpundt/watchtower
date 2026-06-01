@@ -20,7 +20,7 @@ type PortScanResults struct {
 }
 
 // Function to check ports 0-1024 on all hosts in the /24 subnet
-func RunPortScan(subnets []string) {
+func RunPortScan(subnets map[string]string) {
 	log.Info().Msg("Beginning Port Scan")
 
 	scanResults := PortScanResults{
