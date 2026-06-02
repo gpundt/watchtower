@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 
-	//ARP "watchtower/internal/scanner/arp"
+	ARP "watchtower/internal/scanner/arp"
 	ICMP "watchtower/internal/scanner/icmp"
 	Port "watchtower/internal/scanner/port"
 
@@ -22,11 +22,11 @@ func StartNetworkScanner() {
 	log.Debug().Msg("Network Scanner: Initialized")
 
 	ICMP.RunICMPScan(subnets)
-	//ARP.RunARPScan(subnets)
+	ARP.RunARPScan(subnets)
 	Port.RunPortScan(subnets)
 }
 
-// Function to get and return all subnets the server is connected to 
+// Function to get and return all subnets the server is connected to
 func getHostIPSubnets() (map[string]string, error) {
 	subnets := map[string]string{}
 
@@ -39,11 +39,11 @@ func getHostIPSubnets() (map[string]string, error) {
 	for _, iface := range interfaces {
 		addrs, err := iface.Addrs()
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf(
+			return nil, fmt.Errorf(
 				"Failed to fetch addresses for %s: %v",
 				iface.Name,
 				err,
-			))
+			)
 		}
 
 		// For each IP on each interface

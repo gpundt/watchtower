@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
-	"errors"
-	"fmt"
 	"net"
 	"time"
 
@@ -26,7 +24,7 @@ func RunARPScan(subnets map[string]string) {
 	log.Info().Msg("Beginning ARP Scan")
 
 	// For each interface and subnet
-	for interfaceName, ipSubnet := range subnets {
+	for interfaceName := range subnets {
 
 		iface, err := net.InterfaceByName(interfaceName)
 		if err != nil {
@@ -52,7 +50,7 @@ func RunARPScan(subnets map[string]string) {
 		defer handle.Close()
 
 		// Context to control execution timeout
-		ctx, cance; := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 
 		// Start Listeneing for incoming arp replies in a goroutine
@@ -63,7 +61,7 @@ func RunARPScan(subnets map[string]string) {
 			log.Err(err).Str("func", "RunARPScan").Msg("Failed to send ARP requests")
 			return
 		}
-		
+
 		//Allow remaining responses to arrive before exiting
 		<-ctx.Done()
 	}
@@ -72,7 +70,7 @@ func RunARPScan(subnets map[string]string) {
 // Function to filter and log incoming frames containing ARP answers
 func listenForARPReplies(
 	ctx context.Context,
-	handle *pcap.Handle, 
+	handle *pcap.Handle,
 	iface *net.Interface,
 ) {
 	src := gopacket.NewPacketSource(handle, layers.LayerTypeEthernet)
@@ -82,7 +80,7 @@ func listenForARPReplies(
 		select {
 		case <-ctx.Done():
 			return
-		case packet : <-in:
+		case packet := <-in:
 			arpLayer := packet.Layer(layers.LayerTypeARP)
 			if arpLayer == nil {
 				continue
@@ -92,9 +90,9 @@ func listenForARPReplies(
 			// Only process replies targeting this server
 			if arp.Operation == layers.ARPReply && bytes.Equal(arp.DstHwAddress, iface.HardwareAddr) {
 				ip := net.IP(arp.SourceProtAddress)
-				log.Info().Str("ip", ip).
-					Msg(fmt.Sprintf("ARP Reply: %s", ip))
-				Database.InsertPortScan(ip, nil, time.Now())
+				log.Debug().Str("ip", ip.String()).
+					Msg("ARP Reply Received!")
+				Database.InsertPortScan(ip.String(), nil, time.Now())
 
 			}
 		}
@@ -105,25 +103,25 @@ func listenForARPReplies(
 func generateARPRequest(
 	handle *pcap.Handle,
 	iface *net.Interface,
-	ipNet *net.IPNet
+	ipNet *net.IPNet,
 ) error {
 	// Base Ethernet layer
 	eth := layers.Ethernet{
-		SrcMAC: 	  iface.HardwareAddr,
-		DstMAC: 	  net.HardwareAddr{0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-		EthernetType: laters.EthernetTypeARP,
+		SrcMAC:       iface.HardwareAddr,
+		DstMAC:       net.HardwareAddr{0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
+		EthernetType: layers.EthernetTypeARP,
 	}
 
 	//Base ARP request layer template
 	arp := layers.ARP{
-		AddrType: layers.LinkTypeEthernet,
-		Protocol: layers.EthernetTypeIPv4,
-		HwAddressSize: 6,
-		ProtAddressSize: 4,
-		Operation: layers.ARPRequest,
-		SourcHwAddress: []byte(iface.HardwareAddr),
+		AddrType:          layers.LinkTypeEthernet,
+		Protocol:          layers.EthernetTypeIPv4,
+		HwAddressSize:     6,
+		ProtAddressSize:   4,
+		Operation:         layers.ARPRequest,
+		SourceHwAddress:   []byte(iface.HardwareAddr),
 		SourceProtAddress: []byte(ipNet.IP.To4()),
-		DstHwAddress: []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+		DstHwAddress:      []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 	}
 
 	buf := gopacket.NewSerializeBuffer()

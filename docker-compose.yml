@@ -1,7 +1,7 @@
 services:
   db:
     image: timescale/timescaledb:latest-pg16
-    container_name: watchtower_db
+    container_name: watchtower-db
     restart: always
     environment:
       POSTGRES_USER: "watchtower"
@@ -17,7 +17,7 @@ services:
   
   dashboard:
     image: grafana/grafana:main-distroless-slim
-    container_name: watchtower_dashboard
+    container_name: watchtower-dashboard
     restart: unless-stopped
     user: "0:0"
     ports:
@@ -37,8 +37,9 @@ services:
       - db
   
   server:
-    image: busybox:1.38.0
-    container_name: watchtower_server
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
       - ./config/server.yaml:/etc/watchtower/server.yaml
@@ -53,7 +54,7 @@ services:
   
   agent:
     image: busybox:1.38.0
-    container_name: watchtower_agent
+    container_name: watchtower-agent
     restart: unless-stopped
     volumes:
       - ./config/agent.yaml:/etc/watchtower/agent.yaml
