@@ -81,14 +81,14 @@ CREATE TABLE IF NOT EXISTS port_scan (
     hostname            TEXT        PRIMARY KEY,
     open_ports          INTEGER[]   DEFAULT '{}'::INTEGER[],
     last_scan_timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 --- Host Log Entry Table --------------------------------
 CREATE TABLE IF NOT EXISTS logs (
-    time         TIMESTAMPTZ NOT NULL,
-    hostname     TEXT        NOT NULL,
-    severity     TEXT        NOT NULL,
-    log_message  TEXT        NOT NULL,
-    service_name TEXT,
-    user         TEXT
-)
+    time             TIMESTAMPTZ NOT NULL,
+    hostname         TEXT        NOT NULL,
+    severity         TEXT        NOT NULL,
+    log_message      TEXT        NOT NULL,
+    "service"        TEXT,
+    "user"           TEXT
+);
