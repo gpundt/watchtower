@@ -23,6 +23,7 @@ func InitializeServerAPI() {
 	Submission.InitializeHostMemorySubmissionEndpoint()
 	Submission.InitializeHostStorageSubmissionEndpoint()
 	Submission.InitializeHostTempSubmissionEndpoint()
+	Submission.InitializeLogSubmissionEndpoint()
 
 	// Initialize individual registraion endpoints
 	Registration.InitializeAgentRegistrationEndpoint()

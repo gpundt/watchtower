@@ -8,8 +8,8 @@ import (
 	Query "watchtower/internal/api/query"
 	Config "watchtower/internal/config"
 
-	"github.com/rs/zerolog/log"
 	"github.com/lib/pq" // PostgreSQL Driver
+	"github.com/rs/zerolog/log"
 )
 
 // Constant strings for database connection
@@ -20,6 +20,7 @@ const (
 	TemperatureTable  = "host_temperature"
 	AgentsTable       = "agents"
 	PortScanTable     = "port_scan"
+	LogEntryTable     = "logs"
 )
 
 // Helper function to build the connection string fresh each call
@@ -256,6 +257,43 @@ func InsertPortScan(
 	)
 	if execErr != nil {
 		log.Err(execErr).Str("func", "Database.InsertPortScan").Msg("")
+		return execErr
+	}
+
+	return nil
+}
+
+// Function to insert individual log entry into logs database
+func InsertLogEntry(
+	timestamp time.Time,
+	hostname string,
+	severity string,
+	log_message string,
+	service_name string,
+	user string,
+) error {
+	db, err := sql.Open("postgres", dbConnectionString())
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	sqlStatement := fmt.Sprintf(
+		`INSERT INTO %s (time, hostname, severity, log_message, service_name, user) VALUES ($1, $2, $3, $4, $5, $6)`,
+		LogEntryTable,
+	)
+
+	_, execErr := db.Exec(
+		sqlStatement,
+		timestamp,
+		hostname,
+		severity,
+		log_message,
+		service_name,
+		user,
+	)
+	if execErr != nil {
+		log.Err(execErr).Str("func", "Database.InsertLogEntry").Msg("")
 		return execErr
 	}
 
