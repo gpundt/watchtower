@@ -1,2 +1,2 @@
-from ubuntu:jammy
+FROM ubuntu:jammy
 RUN apt-get update && apt install libpcap-dev -y
