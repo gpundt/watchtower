@@ -268,7 +268,7 @@ func InsertLogEntry(
 	timestamp time.Time,
 	hostname string,
 	severity string,
-	log_message string,
+	logMessage string,
 	service_name string,
 	user string,
 ) error {
@@ -288,7 +288,7 @@ func InsertLogEntry(
 		timestamp,
 		hostname,
 		severity,
-		log_message,
+		logMessage,
 		service_name,
 		user,
 	)
