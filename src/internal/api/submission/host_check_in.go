@@ -52,7 +52,7 @@ func SubmitHostCheckIn() {
 	}
 	defer resp.Body.Close()
 	log.Debug().Str("endpoint", Endpoints.SubmitHostCheckIn).
-		Msg("Agent: Registered")
+		Msg("Check-in: Submitted")
 }
 
 func InitializeHostCheckInSubmissionEndpoint() {

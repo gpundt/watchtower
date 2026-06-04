@@ -88,37 +88,50 @@ func submitLog(entry Logs.LogEntry) {
 // Function to call every parse log function and submit parsed logs.
 func SubmitLogs() {
 	// --- Auth logs ---------------------------------------------
-	for _, authLog := range Logs.ParseAuthLogs() {
-		submitLog(authLog)
+	authLogs := Logs.ParseAuthLogs()
+	if len(authLogs) != 0 {
+		for _, authLog := range authLogs {
+			submitLog(authLog)
+		}
+		log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
+			Msg("Auth Logs: Submitted")
+	} else {
+		log.Warn().Str("func", "SubmitLogs").Msg("No auth logs collected")
 	}
-	log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
-		Msg("Auth Logs: Submitted")
 
 	// --- Container logs -----------------------------------------
-	for _, containerLog := range Logs.ParseContainerLogs() {
-		submitLog(containerLog)
+	containerLogs := Logs.ParseContainerLogs()
+	if len(containerLogs) != 0 {
+		for _, containerLog := range containerLogs {
+			submitLog(containerLog)
+		}
+		log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
+			Msg("Container Logs: Submitted")
+	} else {
+		log.Warn().Str("func", "SubmitLogs").Msg("No conainer logs collected")
 	}
-	log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
-		Msg("Container Logs: Submitted")
 
 	// --- Kernel logs -------------------------------------------
-	for _, kernelLog := range Logs.ParseKernelLogs() {
-		submitLog(kernelLog)
+	kernelLogs := Logs.ParseKernelLogs()
+	if len(kernelLogs) != 0 {
+		for _, kernelLog := range kernelLogs {
+			submitLog(kernelLog)
+		}
+		log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
+			Msg("Kernel Logs: Submitted")
+	} else {
+		log.Warn().Str("func", "SubmitLogs").Msg("No kernel logs collected")
 	}
-	log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
-		Msg("Kernel Logs: Submitted")
-
-	// --- Scheduled Task logs -----------------------------------
-	for _, scheduledTaskLog := range Logs.ParseScheduledTaskLogs() {
-		submitLog(scheduledTaskLog)
-	}
-	log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
-		Msg("Scheduled Task Logs: Submitted")
 
 	// --- Service logs ------------------------------------------
-	for _, serviceLog := range Logs.ParseServiceLogs() {
-		submitLog(serviceLog)
+	serviceLogs := Logs.ParseServiceLogs()
+	if len(serviceLogs) != 0 {
+		for _, serviceLog := range serviceLogs {
+			submitLog(serviceLog)
+		}
+		log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
+			Msg("Service Logs: Submitted")
+	} else {
+		log.Warn().Str("func", "SubmitLogs").Msg("No service logs collected")
 	}
-	log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
-		Msg("Service Logs: Submitted")
 }

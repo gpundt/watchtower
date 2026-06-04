@@ -123,26 +123,6 @@ ALTER TABLE container_logs SET(
     timescaledb.compress_segmentby = 'hostname'
 );
 
---- Host CRON Log Entry Table --------------------------------
-CREATE TABLE IF NOT EXISTS cron_logs (
-    time             TIMESTAMPTZ NOT NULL,
-    hostname         TEXT        NOT NULL,
-    severity         TEXT        NOT NULL,
-    log_message      TEXT        NOT NULL,
-    "service"        TEXT,
-    "user"           TEXT,
-
-    CONSTRAINT cron_logs_unique_entry UNIQUE (time, hostname, log_message)
-);
-SELECT create_hypertable('cron_logs', 'time', if_not_exists => TRUE);
-
-CREATE INDEX idx_cron_log_time ON cron_logs (hostname, time DESC);
-
-ALTER TABLE cron_logs SET(
-    timescaledb.compress,
-    timescaledb.compress_segmentby = 'hostname'
-);
-
 --- Host Kernel Log Entry Table --------------------------------
 CREATE TABLE IF NOT EXISTS kernel_logs (
     time             TIMESTAMPTZ NOT NULL,

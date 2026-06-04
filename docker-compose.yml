@@ -63,6 +63,7 @@ services:
       - ./certs/${AGENT_HOSTNAME}_agent:/opt/watchtower/tls/${AGENT_HOSTNAME}_agent
       - /var/log/auth.log:/var/log/auth.log:ro
       - /var/log/kern.log:/var/log/kern.log:ro
+      - /var/log/syslog:/var/log/syslog:ro
     command: ["/opt/watchtower/bin/watchtower_agent"]
     network_mode: "host"
     depends_on:

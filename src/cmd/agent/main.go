@@ -78,7 +78,7 @@ func main() {
 		defer wg.Done()
 		// Create timer loop for metrics
 		logsTicker := time.NewTicker(
-			time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * 5 * time.Second,
+			time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * 10 * time.Second,
 		)
 		defer logsTicker.Stop()
 

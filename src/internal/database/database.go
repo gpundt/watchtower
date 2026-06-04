@@ -22,7 +22,6 @@ const (
 	PortScanTable     = "port_scan"
 	AuthLogEntryTable     = "auth_logs"
 	ContainerLogEntryTable = "conainer_logs"
-	CronLogEntryTable = "cron_logs"
 	KernelLogEntryTable = "kernel_logs"
 	ServiceLogEntryTable = "service_logs"
 )

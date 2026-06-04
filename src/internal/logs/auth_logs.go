@@ -23,6 +23,12 @@ type LogEntry struct {
 	User        string `json:"user"`
 }
 
+// Regex to extract Timestamp, Service, and Message
+var authLogRegex = regexp.MustCompile(`^([A-Za-z]{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+\S+\s+([^:\[]+)(?:\[\d+\])?: (.*)$`)
+
+// Regex to find targeted user in message
+var authUserRegex = regexp.MustCompile(`(?:user|for|to)\s+([a-zA-Z0-9_-]+)`)
+
 func ParseAuthLogs() []LogEntry {
 	entries := []LogEntry{}
 	authLogFilepath := "/var/log/auth.log"
@@ -34,17 +40,10 @@ func ParseAuthLogs() []LogEntry {
 	}
 	defer file.Close()
 
-	// Regex to extract Timestamp, Service, and Message
-	logRegex := regexp.MustCompile(`^([A-Za-z]{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+\S+\s+([^:\[]+)(?:\[\d+\])?: (.*)$`)
-
-
-	// Regex to find targeted user in message
-	userRegex := regexp.MustCompile(`(?:user|for|to)\s+([a-zA-Z0-9_-]+)`)
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		matches := logRegex.FindStringSubmatch(line)
+		matches := authLogRegex.FindStringSubmatch(line)
 
 		if len(matches) == 4 {
 			// Parse timestamp
@@ -53,7 +52,7 @@ func ParseAuthLogs() []LogEntry {
 			parsedTime, _ := time.Parse("2006 Jan  2 15:04:05", timeStr)
 		
 			// Extract user if present in message
-			userMatch := userRegex.FindStringSubmatch(matches[3])
+			userMatch := authUserRegex.FindStringSubmatch(matches[3])
 			user := ""
 			if len(userMatch) > 1 {
 				user = userMatch[1]
