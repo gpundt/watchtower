@@ -5,11 +5,11 @@ import (
 	"time"
 
 	API "watchtower/internal/api"
-	Registration "watchtower/internal/api/registration"
-	Endpoints "watchtower/pkg/endpoints"
 	Query "watchtower/internal/api/query"
+	Registration "watchtower/internal/api/registration"
 	Submission "watchtower/internal/api/submission"
 	Config "watchtower/internal/config"
+	Endpoints "watchtower/pkg/endpoints"
 	Logger "watchtower/pkg/logger"
 
 	"github.com/rs/zerolog/log"
@@ -86,7 +86,7 @@ func main() {
 			Submission.SubmitLogs()
 			log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
 				Msg("Host Logs: Submitted")
-			}
+		}
 	}()
 
 	wg.Wait()

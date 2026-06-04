@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	Config "watchtower/internal/config"
@@ -24,12 +25,19 @@ type LogEntry struct {
 }
 
 // Regex to extract Timestamp, Service, and Message
-var authLogRegex = regexp.MustCompile(`^([A-Za-z]{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+\S+\s+([^:\[]+)(?:\[\d+\])?: (.*)$`)
+var LogRegex = regexp.MustCompile(
+	`^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2})\s+` + // ISO 8601 timestamp
+		`[a-zA-Z0-9_\.\-]+\s+` + // Hostname (ignored)
+		`([^\[:\s][^:\[]*?)` + // Service name (non-greedy)
+		`(?:\[\d+\])?:\s+` + // PID (optional)
+		`(.*)$`, // Message
+)
 
 // Regex to find targeted user in message
 var authUserRegex = regexp.MustCompile(`(?:user|for|to)\s+([a-zA-Z0-9_-]+)`)
 
 func ParseAuthLogs() []LogEntry {
+	log.Info().Str("func", "ParseAuthLogs").Msg("Parsing Auth Logs")
 	entries := []LogEntry{}
 	authLogFilepath := "/var/log/auth.log"
 
@@ -43,35 +51,37 @@ func ParseAuthLogs() []LogEntry {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		matches := authLogRegex.FindStringSubmatch(line)
+		matches := LogRegex.FindStringSubmatch(line)
 
-		if len(matches) == 4 {
-			// Parse timestamp
-			currentYear := time.Now().Year()
-			timeStr := fmt.Sprintf("%d %s", currentYear, matches[1])
-			parsedTime, _ := time.Parse("2006 Jan  2 15:04:05", timeStr)
-		
-			// Extract user if present in message
-			userMatch := authUserRegex.FindStringSubmatch(matches[3])
-			user := ""
-			if len(userMatch) > 1 {
-				user = userMatch[1]
-			}
-
-			// Append 
-			entries = append(
-				entries,
-				LogEntry{
-					Table: Database.AuthLogEntryTable,
-					Host: Config.AgentConfig.Agent.Name,
-					Timestamp: parsedTime.UTC().Format("2006-01-02 15:04:05.000000-0700"),
-					Severity: "INFO",
-					Message: matches[3],
-					ServiceName: matches[2],
-					User: user,
-				},
-			)
+		if len(matches) != 4 {
+			log.Debug().Str("line", line).Msg("no auth regex match")
+			continue
 		}
+
+		// Parse timestamp
+		parsedTime, err := time.Parse(time.RFC3339Nano, matches[1])
+		if err != nil {
+			log.Warn().Str("func", "ParseAuthLogs").Str("timestamp", matches[1]).Msg("failed to parse timestamp")
+			continue
+		}
+
+		// Extract user if present in message
+		userMatch := authUserRegex.FindStringSubmatch(matches[3])
+		user := ""
+		if len(userMatch) > 1 {
+			user = userMatch[1]
+		}
+
+		// Append
+		entries = append(entries, LogEntry{
+			Table:       Database.AuthLogEntryTable,
+			Host:        Config.AgentConfig.Agent.Name,
+			Timestamp:   parsedTime.UTC().Format("2006-01-02 15:04:05.000000-0700"),
+			Severity:    "INFO",
+			Message:     matches[3],
+			ServiceName: strings.TrimSpace(matches[2]),
+			User:        user,
+		})
 	}
 
 	log.Debug().Str("func", "ParseAuthLogs").Msg(

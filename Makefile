@@ -30,8 +30,8 @@ prep_build_output_dirs:
 build_server: prep_build_output_dirs		## Builds watchtower server binary
 	$(call start_step_message,"Building Server Binary")
 	@cd src && \
-# 	go mod vendor && \
-# 	go mod tidy && \
+	go mod vendor && \
+	go mod tidy && \
 	go build -mod=vendor -ldflags="-s -w" -o $(SERVER_BINARY) ./cmd/server
 	$(call successful)
 

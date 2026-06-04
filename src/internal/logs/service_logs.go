@@ -15,14 +15,15 @@ import (
 )
 
 var serviceLogRegex = regexp.MustCompile(
-	`^([A-Z][a-z]{2}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+` + // Timestamp (e.g., Jun  4 12:00:00)
-		`([a-zA-Z0-9_\.\-]+)` + // Host (ignored in capture)
-		`\s+([^\[:]+)` + // Service Name
-		`(?:\[(\d+)\])?:\s+` + // PID (optional capture)
+	`^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2})\s+` + // ISO 8601 timestamp
+		`[a-zA-Z0-9_\.\-]+\s+` + // Hostname (ignored)
+		`([^\[:\s][^:\[]*?)` + // Service name (non-greedy)
+		`(?:\[\d+\])?:\s+` + // PID (optional)
 		`(.*)$`, // Message
 )
 
 func ParseServiceLogs() []LogEntry {
+	log.Info().Str("func", "ParseServiceLogs").Msg("Parsing Service Logs")
 	entries := []LogEntry{}
 	serviceLogFilepath := "/var/log/syslog"
 
@@ -37,27 +38,28 @@ func ParseServiceLogs() []LogEntry {
 	for scanner.Scan() {
 		line := scanner.Text()
 		matches := serviceLogRegex.FindStringSubmatch(line)
-		if len(matches) < 6 {
+		if len(matches) != 4 {
+			log.Debug().Str("line", line).Msg("no service regex match")
 			continue
 		}
 
-		currentYear := time.Now().Year()
-		timeStr := fmt.Sprintf("%s %d", matches[1], currentYear)
-		parsedTime, _ := time.Parse("2006 Jan  2 15:04:05", timeStr)
-
-		entry := LogEntry{
-			Table: Database.ServiceLogEntryTable,
-			Host: Config.AgentConfig.Agent.Name,
-			Timestamp: parsedTime.UTC().Format("2006-01-02 15:04:05.000000-0700"),
-			Severity: "INFO",
-			Message: matches[5],
-			ServiceName: strings.TrimSpace(matches[3]),
-			User: "N/A",
+		parsedTime, err := time.Parse(time.RFC3339Nano, matches[1])
+		if err != nil {
+			log.Warn().Str("func", "ParseServiceLogs").Str("timestamp", matches[1]).Msg("failed to parse timestamp")
+			continue
 		}
 
-		entries = append(entries, entry)
+		entries = append(entries, LogEntry{
+			Table:       Database.ServiceLogEntryTable,
+			Host:        Config.AgentConfig.Agent.Name,
+			Timestamp:   parsedTime.UTC().Format("2006-01-02 15:04:05.000000-0700"),
+			Severity:    "INFO",
+			Message:     matches[3],
+			ServiceName: strings.TrimSpace(matches[2]),
+			User:        "N/A",
+		})
 	}
-	 
+
 	log.Debug().Str("func", "ParseServiceLogs").Msg(
 		fmt.Sprintf("Service Logs Parsed: %d", len(entries)),
 	)
