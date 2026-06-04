@@ -20,7 +20,11 @@ const (
 	TemperatureTable  = "host_temperature"
 	AgentsTable       = "agents"
 	PortScanTable     = "port_scan"
-	LogEntryTable     = "logs"
+	AuthLogEntryTable     = "auth_logs"
+	ContainerLogEntryTable = "conainer_logs"
+	CronLogEntryTable = "cron_logs"
+	KernelLogEntryTable = "kernel_logs"
+	ServiceLogEntryTable = "service_logs"
 )
 
 // Helper function to build the connection string fresh each call
@@ -265,11 +269,12 @@ func InsertPortScan(
 
 // Function to insert individual log entry into logs database
 func InsertLogEntry(
+	tableName string,
 	timestamp time.Time,
-	hostname string,
-	severity string,
-	logMessage string,
-	service_name string,
+	hostname,
+	severity,
+	logMessage,
+	serviceName,
 	user string,
 ) error {
 	db, err := sql.Open("postgres", dbConnectionString())
@@ -280,7 +285,7 @@ func InsertLogEntry(
 
 	sqlStatement := fmt.Sprintf(
 		`INSERT INTO %s (time, hostname, severity, log_message, "service", "user") VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (time, hostname, log_message) DO NOTHING`,
-		LogEntryTable,
+		tableName,
 	)
 
 	_, execErr := db.Exec(
@@ -289,7 +294,7 @@ func InsertLogEntry(
 		hostname,
 		severity,
 		logMessage,
-		service_name,
+		serviceName,
 		user,
 	)
 	if execErr != nil {

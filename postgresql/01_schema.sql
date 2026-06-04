@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS port_scan (
     last_scan_timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
---- Host Log Entry Table --------------------------------
-CREATE TABLE IF NOT EXISTS logs (
+--- Host Auth Log Entry Table --------------------------------
+CREATE TABLE IF NOT EXISTS auth_logs (
     time             TIMESTAMPTZ NOT NULL,
     hostname         TEXT        NOT NULL,
     severity         TEXT        NOT NULL,
@@ -92,13 +92,93 @@ CREATE TABLE IF NOT EXISTS logs (
     "service"        TEXT,
     "user"           TEXT,
 
-    CONSTRAINT logs_unique_entry UNIQUE (time, hostname, log_message)
+    CONSTRAINT auth_logs_unique_entry UNIQUE (time, hostname, log_message)
 );
-SELECT create_hypertable('logs', 'time', if_not_exists => TRUE);
+SELECT create_hypertable('auth_logs', 'time', if_not_exists => TRUE);
 
-CREATE INDEX idx_log_time ON logs (hostname, time DESC);
+CREATE INDEX idx_auth_log_time ON auth_logs (hostname, time DESC);
 
-ALTER TABLE logs SET(
+ALTER TABLE auth_logs SET(
+    timescaledb.compress,
+    timescaledb.compress_segmentby = 'hostname'
+);
+
+--- Host Container Log Entry Table --------------------------------
+CREATE TABLE IF NOT EXISTS container_logs (
+    time             TIMESTAMPTZ NOT NULL,
+    hostname         TEXT        NOT NULL,
+    severity         TEXT        NOT NULL,
+    log_message      TEXT        NOT NULL,
+    "service"        TEXT,
+    "user"           TEXT,
+
+    CONSTRAINT container_logs_unique_entry UNIQUE (time, hostname, log_message)
+);
+SELECT create_hypertable('container_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX idx_container_log_time ON container_logs (hostname, time DESC);
+
+ALTER TABLE container_logs SET(
+    timescaledb.compress,
+    timescaledb.compress_segmentby = 'hostname'
+);
+
+--- Host CRON Log Entry Table --------------------------------
+CREATE TABLE IF NOT EXISTS cron_logs (
+    time             TIMESTAMPTZ NOT NULL,
+    hostname         TEXT        NOT NULL,
+    severity         TEXT        NOT NULL,
+    log_message      TEXT        NOT NULL,
+    "service"        TEXT,
+    "user"           TEXT,
+
+    CONSTRAINT cron_logs_unique_entry UNIQUE (time, hostname, log_message)
+);
+SELECT create_hypertable('cron_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX idx_cron_log_time ON cron_logs (hostname, time DESC);
+
+ALTER TABLE cron_logs SET(
+    timescaledb.compress,
+    timescaledb.compress_segmentby = 'hostname'
+);
+
+--- Host Kernel Log Entry Table --------------------------------
+CREATE TABLE IF NOT EXISTS kernel_logs (
+    time             TIMESTAMPTZ NOT NULL,
+    hostname         TEXT        NOT NULL,
+    severity         TEXT        NOT NULL,
+    log_message      TEXT        NOT NULL,
+    "service"        TEXT,
+    "user"           TEXT,
+
+    CONSTRAINT kernel_logs_unique_entry UNIQUE (time, hostname, log_message)
+);
+SELECT create_hypertable('kernel_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX idx_kernel_log_time ON kernel_logs (hostname, time DESC);
+
+ALTER TABLE kernel_logs SET(
+    timescaledb.compress,
+    timescaledb.compress_segmentby = 'hostname'
+);
+
+--- Host Service Log Entry Table --------------------------------
+CREATE TABLE IF NOT EXISTS service_logs (
+    time             TIMESTAMPTZ NOT NULL,
+    hostname         TEXT        NOT NULL,
+    severity         TEXT        NOT NULL,
+    log_message      TEXT        NOT NULL,
+    "service"        TEXT,
+    "user"           TEXT,
+
+    CONSTRAINT service_logs_unique_entry UNIQUE (time, hostname, log_message)
+);
+SELECT create_hypertable('service_logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX idx_service_log_time ON service_logs (hostname, time DESC);
+
+ALTER TABLE service_logs SET(
     timescaledb.compress,
     timescaledb.compress_segmentby = 'hostname'
 );

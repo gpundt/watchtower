@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	API "watchtower/internal/api"
@@ -27,47 +28,67 @@ func main() {
 	API.InitializeAgentAPI()
 	Registration.RegisterAgent()
 
-	// Create timer loop
-	ticker := time.NewTicker(
-		time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * time.Second,
-	)
-	defer ticker.Stop()
+	var wg sync.WaitGroup
+	// Background process for submitting metrics
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		// Create timer loop for metrics
+		metricsTicker := time.NewTicker(
+			time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * time.Second,
+		)
+		defer metricsTicker.Stop()
 
-	// Every Config.AgentConfig.Agent.PushIntervalSeconds
-	for range ticker.C {
-		// Submit data to each individual submisson endpoint
-		Submission.SubmitHostCheckIn()
-		Submission.SubmitHostMetrics(
-			Endpoints.SubmitHostCPU,
-			Query.GenerateHostCPUJSON(
-				Config.AgentConfig.Agent.Name,
-			),
-		)
-		Submission.SubmitHostMetrics(
-			Endpoints.SubmitHostMemory,
-			Query.GenerateHostMemoryJSON(
-				Config.AgentConfig.Agent.Name,
-			),
-		)
-		Submission.SubmitHostMetrics(
-			Endpoints.SubmitHostStorage,
-			Query.GenerateHostStorageJSON(
-				Config.AgentConfig.Agent.Name,
-			),
-		)
-		Submission.SubmitHostMetrics(
-			Endpoints.SubmitHostTemp,
-			Query.GenerateHostTempJSON(
-				Config.AgentConfig.Agent.Name,
-			),
-		)
-		log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).
-			Msg("Host Metrics: Submitted")
-		
-		Submission.SubmitLogs()
-		log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
-			Msg("Host Logs: Submitted")
-	}
+		// Every Config.AgentConfig.Agent.PushIntervalSeconds
+		for range metricsTicker.C {
+			// Submit data to each individual submisson endpoint
+			Submission.SubmitHostCheckIn()
+			Submission.SubmitHostMetrics(
+				Endpoints.SubmitHostCPU,
+				Query.GenerateHostCPUJSON(
+					Config.AgentConfig.Agent.Name,
+				),
+			)
+			Submission.SubmitHostMetrics(
+				Endpoints.SubmitHostMemory,
+				Query.GenerateHostMemoryJSON(
+					Config.AgentConfig.Agent.Name,
+				),
+			)
+			Submission.SubmitHostMetrics(
+				Endpoints.SubmitHostStorage,
+				Query.GenerateHostStorageJSON(
+					Config.AgentConfig.Agent.Name,
+				),
+			)
+			Submission.SubmitHostMetrics(
+				Endpoints.SubmitHostTemp,
+				Query.GenerateHostTempJSON(
+					Config.AgentConfig.Agent.Name,
+				),
+			)
+			log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).
+				Msg("Host Metrics: Submitted")
+		}
+	}()
 
+	// Background process for submitting logs
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		// Create timer loop for metrics
+		logsTicker := time.NewTicker(
+			time.Duration(Config.AgentConfig.Agent.PushIntervalSeconds) * 5 * time.Second,
+		)
+		defer logsTicker.Stop()
+
+		for range logsTicker.C {
+			Submission.SubmitLogs()
+			log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
+				Msg("Host Logs: Submitted")
+			}
+	}()
+
+	wg.Wait()
 	Logger.Close()
 }

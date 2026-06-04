@@ -18,6 +18,7 @@ import (
 )
 
 type LogEntry struct {
+	Table       string `json:"table"`
 	Host        string `json:"host"`
 	Timestamp   string `json:"timestamp"`
 	Severity    string `json:"severity"`
@@ -35,6 +36,7 @@ func InitializeLogSubmissionEndpoint() {
 				log.Err(parseErr).Str("func", "InitializeLogSubmissionEndpoint").Msg("")
 			}
 			err := Database.InsertLogEntry(
+				body.Table,
 				timestampObj,
 				body.Host,
 				body.Severity,

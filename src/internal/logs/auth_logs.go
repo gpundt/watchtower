@@ -8,11 +8,13 @@ import (
 	"time"
 
 	Config "watchtower/internal/config"
+	Database "watchtower/internal/database"
 
 	"github.com/rs/zerolog/log"
 )
 
 type LogEntry struct {
+	Table       string `json:"table"`
 	Host        string `json:"host"`
 	Timestamp   string `json:"timestamp"`
 	Severity    string `json:"severity"`
@@ -61,6 +63,7 @@ func ParseAuthLogs() []LogEntry {
 			entries = append(
 				entries,
 				LogEntry{
+					Table: Database.AuthLogEntryTable,
 					Host: Config.AgentConfig.Agent.Name,
 					Timestamp: parsedTime.UTC().Format("2006-01-02 15:04:05.000000-0700"),
 					Severity: "INFO",
