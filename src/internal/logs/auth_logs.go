@@ -33,7 +33,7 @@ func ParseAuthLogs() []LogEntry {
 	defer file.Close()
 
 	// Regex to extract Timestamp, Service, and Message
-	logRegex := regexp.MustCompile(`^(A-Za-z]{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+\S+\s+([^:\[]+)(?:\[\d+\])?: (.*)$`)
+	logRegex := regexp.MustCompile(`^([A-Za-z]{3}\s+\d+\s+\d{2}:\d{2}:\d{2})\s+\S+\s+([^:\[]+)(?:\[\d+\])?: (.*)$`)
 
 
 	// Regex to find targeted user in message
@@ -72,5 +72,8 @@ func ParseAuthLogs() []LogEntry {
 		}
 	}
 
+	log.Debug().Str("func", "ParseAuthLogs").Msg(
+		fmt.Sprintf("Auth Logs Parsed: %d", len(entries)),
+	)
 	return entries
 }

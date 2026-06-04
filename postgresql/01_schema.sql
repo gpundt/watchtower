@@ -90,5 +90,15 @@ CREATE TABLE IF NOT EXISTS logs (
     severity         TEXT        NOT NULL,
     log_message      TEXT        NOT NULL,
     "service"        TEXT,
-    "user"           TEXT
+    "user"           TEXT,
+
+    CONSTRAINT logs_unique_entry UNIQUE (time, hostname, log_message)
+);
+SELECT create_hypertable('logs', 'time', if_not_exists => TRUE);
+
+CREATE INDEX idx_log_time ON logs (hostname, time DESC);
+
+ALTER TABLE logs SET(
+    timescaledb.compress,
+    timescaledb.compress_segmentby = 'hostname'
 );
