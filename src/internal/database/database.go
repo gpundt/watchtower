@@ -279,7 +279,7 @@ func InsertLogEntry(
 	defer db.Close()
 
 	sqlStatement := fmt.Sprintf(
-		`INSERT INTO %s (time, hostname, severity, log_message, "service", "user") VALUES ($1, $2, $3, $4, $5, $6)`,
+		`INSERT INTO %s (time, hostname, severity, log_message, "service", "user") VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (time, hostname, severity, log_message, "service", "user") DO NOTHING`,
 		LogEntryTable,
 	)
 

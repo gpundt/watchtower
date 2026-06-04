@@ -63,6 +63,10 @@ func main() {
 		)
 		log.Info().Str("endpoint", Endpoints.SubmissionEndpoint).
 			Msg("Host Metrics: Submitted")
+		
+		Submission.SubmitLogs()
+		log.Info().Str("endpoint", Endpoints.SubmitLogEntry).
+			Msg("Host Logs: Submitted")
 	}
 
 	Logger.Close()

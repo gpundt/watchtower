@@ -30,8 +30,12 @@ func InitializeLogSubmissionEndpoint() {
 	http.HandleFunc(
 		fmt.Sprintf("POST %s", Endpoints.SubmitLogEntry),
 		Handlers.MakePostHandler[LogEntry](func(body LogEntry) error {
+			timestampObj, parseErr := time.Parse("2006-01-02 15:04:05.000000-0700", body.Timestamp)
+			if parseErr != nil {
+				log.Err(parseErr).Str("func", "InitializeLogSubmissionEndpoint")
+			}
 			err := Database.InsertLogEntry(
-				time.Now(),
+				timestampObj,
 				body.Host,
 				body.Severity,
 				body.Message,

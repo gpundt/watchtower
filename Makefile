@@ -22,7 +22,7 @@ define successful
 	@echo -e "\t - $(GREEN)*Successful*$(RESET)\n"
 endef
 
-all: build_server build_agent				## Builds everything
+all: build_server build_agent deploy_docker				## Builds everything
 
 prep_build_output_dirs:
 	@mkdir -p $(BUILD_OUTPUT_DIR)
@@ -30,14 +30,24 @@ prep_build_output_dirs:
 build_server: prep_build_output_dirs		## Builds watchtower server binary
 	$(call start_step_message,"Building Server Binary")
 	@cd src && \
-	go mod vendor && \
-	go mod tidy && \
+# 	go mod vendor && \
+# 	go mod tidy && \
 	go build -mod=vendor -ldflags="-s -w" -o $(SERVER_BINARY) ./cmd/server
 	$(call successful)
 
 build_agent: prep_build_output_dirs			## Builds Watchtower agent binary
 	$(call start_step_message,"Building Agent Binary")
 	@cd src && go build -mod=vendor -ldflags="-s -w" -o $(AGENT_BINARY) ./cmd/agent
+	$(call successful)
+
+deploy_docker:								## Deploys docker-compose stack
+	$(call start_step_message,"Deploying Docker Stack")
+	@sudo docker-compose up -d --build
+	$(call successful)
+
+shutdown_docker:
+	$(call start_step_message,"Shutting Down Docker Stack")
+	@sudo docker-compose down
 	$(call successful)
 
 help:										## Prints available make targets
